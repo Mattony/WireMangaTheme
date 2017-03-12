@@ -1,0 +1,8 @@
+.Inputfield_admin_column_left,
+.Inputfield_admin_column_right {
+    outline: 0;
+}
+
+.Inputfield_admin_column_right {
+    margin-left: 3%;
+}

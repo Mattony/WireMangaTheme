@@ -1,0 +1,24 @@
+<?php namespace ProcessWire;
+
+/*
+ * WireMangaTheme
+ *
+ */
+class WireMangaTheme extends Process {
+	public function ___install() {
+		parent::___install();
+		require_once(__DIR__ . "/WireMangaThemeSetup.php");
+		$wmtSetup = new WireMangaThemeSetup();
+		$wmtSetup->install();
+	}
+
+	public function ___uninstall() {
+		parent::___uninstall();
+		if($this->input->wmt_clean_up){
+			require_once(__DIR__ . "/WireMangaThemeSetup.php");
+			$wmtSetup = new WireMangaThemeSetup();
+			$wmtSetup->uninstall();
+		}
+	}
+
+}
