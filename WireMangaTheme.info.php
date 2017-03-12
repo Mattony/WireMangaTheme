@@ -4,5 +4,5 @@ $info = [
 	'summary' => 'Theme for WireManga',
 	'version' => 001,
 	'author'  => 'WireManga',
-	'href'    => 'https://github.com/f-b-g-m/WireMangaTheme/',
+	'href'    => 'https://github.com/fbg13/WireMangaTheme/',
 ];
