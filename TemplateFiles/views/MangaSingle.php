@@ -62,9 +62,9 @@
 					<div class="data--value">
 						<?php
 							$x = 1;
-							foreach($page->wm_external_sites as $eSite) {
-								$sep = ($x != $page->wm_external_sites->count) ? $sep = ", " : "";
-								echo "<a href='{$eSite->wm_url_sut}'>{$eSite->title}</a>{$sep}";
+							foreach($page->wm_sites as $site) {
+								$sep = ($x != $page->wm_sites->count) ? $sep = ", " : "";
+								echo "<a href='{$site->wm_site_url}'>{$site->title}</a>{$sep}";
 								$x++;
 							}
 						?>

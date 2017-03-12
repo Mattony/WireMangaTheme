@@ -22,7 +22,7 @@ class WireMangaThemeSetup extends Wire {
 		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
 
 		// Change title field in the repeater_wm_external_sites template context
-		$t = $this->wire("templates")->get("name=repeater_wm_external_sites");
+		$t = $this->wire("templates")->get("name=repeater_wm_sites");
 		$f = $t->fieldgroup->getField('title', true);
 		$f->label = "Name";
 		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
