@@ -14,10 +14,31 @@ class WireMangaTheme extends Process {
 
 	public function ___uninstall() {
 		parent::___uninstall();
-		if($this->input->wmt_clean_up){
+		if($this->input->post->wmt_clean_up) {
 			require_once(__DIR__ . "/WireMangaThemeSetup.php");
 			$wmtSetup = new WireMangaThemeSetup();
 			$wmtSetup->uninstall();
+		}
+	}
+
+	public function init() {
+		wire()->addHookBefore("ProcessModule::execute", $this, "changeModuleService");
+		if($this->input->post->wmt_update_template_files) {
+			require_once(__DIR__ . "/WireMangaThemeSetup.php");
+			$wmtSetup = new WireMangaThemeSetup();
+			$wmtSetup->copyFiles($this->config->paths->siteModules . "WireMangaTheme/TemplateFiles/", $this->config->paths->templates);
+			$this->input->post->wmt_update_template_files = 0;
+		}
+		if($this->input->post->wmt_clean_up) {
+			$this->input->post->wmt_clean_up = 0;
+		}
+		//wire()->addHookAfter("ProcessModule::executeEdit", $this, "updateTemplateFiles");
+	}
+
+	public function changeModuleService(HookEvent $event) {
+		if($_GET["update"] === "WireMangaTheme") {
+			wire("config")->moduleServiceURL = 'http://demo.wiremanga.com/';
+			wire("config")->moduleServiceKey = (__NAMESPACE__ ? 'pw300' : 'pw280');
 		}
 	}
 

@@ -1,6 +1,8 @@
 <?php namespace ProcessWire;
 /*
- * WireManga - a module for creating a manga reader
+ * WireMangaThemeSetup 
+ *
+ * Create theme settings templates, fields and pages
  *
  */
 
@@ -72,7 +74,7 @@ class WireMangaThemeSetup extends Wire {
 			["name" => "wm_adult_warning_off", "type" => "Checkbox", "add_to" => "user"           , "label" => "Disable Adult Warning", "notes" => "If checked the adult warning won't show anymore."],
 			["name" => "wm_hide_adult"       , "type" => "Checkbox", "add_to" => "user"           , "label" => "Hide Adult Manga", "notes" => "If checked manga marked as adult will be hidden."],
 			["name" => "wm_account_status"   , "type" => "Text"    , "add_to" => "user"           , "label" => "Account Status"],
-			["name" => "wm_profile_image"    , "type" => "Image"   , "add_to" => "user"           , "label" => "Profile Image", "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
+			["name" => "wm_profile_image"    , "type" => "Image"   , "add_to" => "user"           , "label" => "Profile Image", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
 			["name" => "wm_registration_date", "type" => "Datetime", "add_to" => "user"           , "label" => "Registration Date"]
 		];
 
@@ -150,6 +152,10 @@ class WireMangaThemeSetup extends Wire {
 				$f->save();
 				if(isset($field["notes"])) {
 					$f->notes = $field["notes"];
+				}
+				if(isset($field["defaultValuePage"])) {
+					$p = $this->wire("pages")->get("path=/settings/");
+					$f->defaultValuePage = $p->id;
 				}
 				if(isset($field["ext"])) {
 					$f->extensions = $field["ext"];
