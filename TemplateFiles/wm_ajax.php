@@ -47,8 +47,8 @@ if($config->ajax && $input->post->action == 'showComments') {
 if($config->ajax && $input->post->action == 'showChapters') {
 	$id = (int) $this->input->post->pageID;
 	$p = $pages->get("template=wm_manga_single, id={$id}");
-	$chapters = $cache->get("chapters:".$p->id, function($manga) use($p){
-		chapterListForCache($p);
+	$chapters = $cache->get("chapters:".$p->id, function() use($p){
+		return chapterListForCache($p);
 	});
 	$result = [
 		"success" => true,
@@ -63,8 +63,8 @@ if($config->ajax && $input->post->action == 'showChapters') {
 if($this->input->post->action == "showInfo") {
 	$id = (int) $this->input->post->pageID;
 	$p = $pages->get("template=wm_manga_single, id={$id}");
-	$author = getTerms($p->wm_author, ", ");
-	$genre  = getTerms($p->wm_genre, "", "uk-label");
+	$author = getTerms($p->wm_authors, ", ");
+	$genre  = getTerms($p->wm_genres, "", "uk-label");
 	$desc   = substr(strip_tags($p->wm_description), 0, 500) . "...";
 
 	// Build html output

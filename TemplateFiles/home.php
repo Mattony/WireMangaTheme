@@ -3,7 +3,7 @@
 $bodyClass .= " manga-home";
 
 $vars = array(
-    "chapters" => $manga->latestChapters(12),
+    "chapters" => $wm->latestChapters(12),
 );
 $content = $files->render(__DIR__ . "/views/Home.php", $vars);
 

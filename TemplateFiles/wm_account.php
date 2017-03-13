@@ -21,9 +21,9 @@ elseif($input->urlSegment1 == "profile") {
 
 elseif($input->urlSegment1 == "edit-profile") {
 	$content = $files->render(__DIR__ . "/views/account/EditProfile.php", ["account" => $account]);
-	$footerAssets .= "<script src='{$config->urls->templates}_defaults/assets/js/cropper.min.js'></script>";
-	$footerAssets .= "<script src='{$config->urls->templates}_defaults/assets/js/cropper-setup.js'></script>";
-	$headerAssets .= "<link rel='stylesheet' href='{$config->urls->templates}_defaults/assets/css/cropper.min.css' type='text/css'>";
+	$footerAssets .= "<script src='{$config->urls->templates}assets/js/cropper.min.js'></script>";
+	$footerAssets .= "<script src='{$config->urls->templates}assets/js/cropper-setup.js'></script>";
+	$headerAssets .= "<link rel='stylesheet' href='{$config->urls->templates}assets/css/cropper.min.css' type='text/css'>";
 }
 
 elseif($input->urlSegment1 == "password-reset") {

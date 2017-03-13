@@ -21,4 +21,9 @@ class WireMangaTheme extends Process {
 		}
 	}
 
+	public function ready() {
+		$wmSettings = $this->wire("pages")->get("/settings/");
+		$this->wire("settings", $wmSettings);
+	}
+
 }

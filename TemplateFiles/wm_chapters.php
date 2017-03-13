@@ -10,7 +10,7 @@ $jsVars = json_encode($config->js());
 $newConfigJS = "<script> var config = {$jsVars}; </script>";
 
 $bodyClass .= " manga-reader";
-$footerAssets .= "<script src='{$config->urls->templates}_defaults/assets/js/manga-reader.js'></script>";
+$footerAssets .= "<script src='{$config->urls->templates}assets/js/manga-reader.js'></script>";
 //over write old js config with new one
 $headerAssets = str_replace($oldConfigJS, $newConfigJS, $headerAssets);
 

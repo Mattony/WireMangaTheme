@@ -78,7 +78,7 @@ $hasSidebar = false;
 if($page->template->name == "home" || $page->template->name == "terms") {
 	$bodyClass .= " has-sidebar"; // add a 'has-sidebar' class to the body element
 	$hasSidebar = true;
-	$sidebar = include(__DIR__ . '/layout/_sidebar.php');
+	$sidebar = $files->render(__DIR__ . '/_sidebar.php');
 }
 else {
 	$sidebar = "";
