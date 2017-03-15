@@ -2,8 +2,8 @@
 $info = [
 	"title"   => "WireMangaTheme",
 	"summary" => "Theme for WireManga",
-	"version" => "0.0.4",
+	"version" => "0.0.5",
 	"author"  => "WireManga",
 	"href"    => "https://github.com/fbg13/WireMangaTheme/",
-	"autoload" => "path=/admin/module/"
+	"autoload" => true
 ];
