@@ -1,6 +1,7 @@
-<?php namespace ProcessWire; ?>
+<?php namespace ProcessWire;
+$sidebarClass = $settings->wm_fixed_width ? "uk-width-1-4@l" : "uk-width-1-5@l"; ?>
 
-<aside class='secondary-content sidebar uk-width-1-5@l'>
+<aside class='secondary-content sidebar <?= $sidebarClass ?>'>
 
 <!-- // Latest Manga -->
 <section class='widget uk-margin-large-bottom'>

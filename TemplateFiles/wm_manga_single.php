@@ -20,8 +20,8 @@ $bodyClass .= " manga-single";
 if($user->isSuperuser() && $input->get->clearChapterList == "yes") {
 	$cache->delete("chapters:" . $page->id);
 }
-$chapters = $cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page){
-	echo chapterListForCache($page);
+$chapters = $cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page, $wmt){
+	return $wmt->chapterListMarkup($page);
 });
 
 if($fredi = $modules->get("Fredi")) {
@@ -73,7 +73,7 @@ include("_main.php");
 if($session->get('viewed_'.$page->id) !== 1) {
 	// prevent clearing of chapter list cache
 	// by setting a session variable
-	$session->set('dontClearCache'.$page->id, 1);
+	$session->set('dontRefreshCache_'.$page->id, 1);
 
 	// increment views and save page
 	$page->of(false);
@@ -81,7 +81,7 @@ if($session->get('viewed_'.$page->id) !== 1) {
 	$page->save("views");
 
 	// clear session variable so cache can be cleared
-	$session->set('dontClearCache'.$page->id, 0);
+	$session->set('dontRefreshCache_'.$page->id, 0);
 	// set page as viewed so it doesn't increment again this session
 	$session->set('viewed_'.$page->id, 1);
 }

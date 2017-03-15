@@ -47,8 +47,8 @@ if($config->ajax && $input->post->action == 'showComments') {
 if($config->ajax && $input->post->action == 'showChapters') {
 	$id = (int) $this->input->post->pageID;
 	$p = $pages->get("template=wm_manga_single, id={$id}");
-	$chapters = $cache->get("chapters:".$p->id, function() use($p){
-		return chapterListForCache($p);
+	$chapters = $cache->get("chapters:" . $p->id, $cache::expireNever, function() use($p, $wmt){
+		return $wmt->chapterListMarkup($p);
 	});
 	$result = [
 		"success" => true,

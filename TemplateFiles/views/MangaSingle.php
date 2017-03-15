@@ -56,7 +56,7 @@
 					<div class="data--value"><?= $scanlation ?></div>
 				</div>
 			<?php endif ?>
-			<?php if($page->wm_external_sites->count) { ?>
+			<?php if($page->wm_sites->count) { ?>
 				<div class="data--block">
 					<div class="data--name">More</div>
 					<div class="data--value">
@@ -91,7 +91,7 @@
 </div>
 <section class="uk-section-small uk-section-muted">
 	<div class="manga--chapters-comments wm-padding-left wm-padding-right">
-		<?php echo $chapters ?>
-		<?php // echo $comments ?>
+		<?= $settings->wm_before_chapters ?>
+		<?= $chapters ?>
 	</div>
 </section>

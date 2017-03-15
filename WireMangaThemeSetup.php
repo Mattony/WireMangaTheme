@@ -54,6 +54,7 @@ class WireMangaThemeSetup extends Wire {
 		$this->pages_ = [
 			["title" => "User", "name" => "user", "template" => "wm_account", "path" => "/"],
 			["title" => "Theme Settings", "name" => "settings", "template" => "wm_settings", "path" => "/"],
+			["title" => "Ajax"          , "name" => "ajax"    , "template" => "wm_ajax"    , "path" => "/"],
 		];
 		
 		$this->fields_ = [
@@ -71,6 +72,9 @@ class WireMangaThemeSetup extends Wire {
 			["name" => "wm_site_title_sep"   , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "Site Title Separator", "notes" => "Used in the title tag."],
 			["name" => "wm_site_email"       , "type" => "Email"   , "add_to" => "wm_settings"    , "label" => "Site Email", "notes" => "Emails will be sent from this address."],
 			["name" => "wm_menu"             , "type" => "Repeater", "add_to" => "wm_settings"    , "label" => "Menu", "fields" => "title wm_menu_URL wm_menu_class wm_menu_show_to"],
+			["name" => "wm_no_chapters"      , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "No Chapters Available Text", "notes" => "Text displayed when the manga has no chapters."],
+			["name" => "wm_before_chapters"  , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "Before Chapters Text", "notes" => "Text displayed before chapters list on manga page."],
+			["name" => "wm_limit_width"      , "type" => "Checkbox", "add_to" => "wm_settings"    , "label" => "Limit Page Width", "notes" => "When checked the page will have a max width of 1200px."],
 			["name" => "wm_adult_warning_off", "type" => "Checkbox", "add_to" => "user"           , "label" => "Disable Adult Warning", "notes" => "If checked the adult warning won't show anymore."],
 			["name" => "wm_hide_adult"       , "type" => "Checkbox", "add_to" => "user"           , "label" => "Hide Adult Manga", "notes" => "If checked manga marked as adult will be hidden."],
 			["name" => "wm_account_status"   , "type" => "Text"    , "add_to" => "user"           , "label" => "Account Status"],
@@ -81,6 +85,7 @@ class WireMangaThemeSetup extends Wire {
 		$this->templates_ = [
 			["name" => "wm_account", "urlSegments" => 1],
 			["name" => "wm_settings"],
+			["name" => "wm_ajax"],
 		];
 	}
 
@@ -94,7 +99,7 @@ class WireMangaThemeSetup extends Wire {
 	 * @param string $dest Path to destination directory
 	 *
 	 */
-	protected function copyFiles($src, $dest) {
+	public function copyFiles($src, $dest) {
 		$files = scandir($src);
 		@mkdir($dest);
 		foreach($files as $file) {

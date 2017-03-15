@@ -29,24 +29,8 @@ ul,li{list-style: none}
 	transition: all 0.4s ease;
 }
 
-
 .content {
 	margin-top: 150px;
-}
-
-.footer {
-	margin: 0 -15px;
-}
-
-@media (min-width: 640px) {
-	.footer {
-		margin: 0 -30px;
-	}
-}
-@media (min-width: 960px) {
-	.footer {
-		margin: 0 -40px;
-	}
 }
 
 /* Menu */
@@ -56,6 +40,12 @@ ul,li{list-style: none}
 
 .header--menu {
 	display: none;
+}
+
+.uk-navbar-item,
+.uk-navbar-nav>li>a,
+.uk-navbar-toggle {
+	height: 45px;
 }
 
 .header--menu-toggle {
@@ -70,6 +60,12 @@ ul,li{list-style: none}
 	justify-content: flex-end;
 	width: 80%;
 	z-index: 200;
+}
+
+.header-search input,
+.header-search button {
+	height: 30px;
+	line-height: 1
 }
 
 .header--menu-toggle.on,
@@ -93,7 +89,7 @@ ul,li{list-style: none}
 }
 
 .header--menu.small-screen.is-visible {
-	transform: translateY(80px);
+	transform: translateY(45px);
 }
 
 .manga-reader .header--menu.small-screen.is-visible {
@@ -389,18 +385,6 @@ ul,li{list-style: none}
 	padding: 10px;
 	display: block;
 }
-.manga-reader .uk-navbar-item,
-.manga-reader .uk-navbar-nav>li>a,
-.manga-reader .uk-navbar-toggle {
-	height: 45px;
-}
-
-.manga-reader input,
-.manga-reader button {
-	height: 30px;
-	line-height: 1
-}
-
 
 
 /* Comments */

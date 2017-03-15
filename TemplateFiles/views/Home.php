@@ -1,5 +1,7 @@
-<?php namespace ProcessWire; ?>
-<div class=" uk-child-width-1-2@s uk-child-width-1-2@m" uk-grid>
+<?php namespace ProcessWire; 
+$childWidth = $settings->wm_fixed_width ? "uk-child-width-1-1" : "uk-child-width-1-2@s"; ?>
+
+<div class=" <?= $childWidth ?>" uk-grid>
 	<?php foreach($chapters as $chapter):
 	    $editLink = "";
 	    if($user->isSuperUser()) {
