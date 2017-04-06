@@ -26,11 +26,10 @@ class WireMangaTheme extends Process {
 		$this->wire("settings", $wmSettings);
 		$this->wire("wmt", $this);
 
-		wire()->addHookAfter("Pages::saveReady", $this, "cacheChapters");
-		wire()->addHookAfter("ProcessPageEdit::execute", $this, "renameChildrenTab");
-		if($this->input->get->name == get_class($this)) {
-			wire()->addHookBefore("ProcessModule::execute", $this, "changeModuleService");
-			wire()->addHookAfter("ProcessModule::executeEdit", $this, "updateTemplateFiles");
+		$this->wire()->addHookAfter("Pages::saveReady", $this, "cacheChapters");
+		$this->wire()->addHookAfter("ProcessPageEdit::execute", $this, "renameChildrenTab");
+		if($this->input->get->update === "WireMangaTheme") {
+			$this->wire()->addHookBefore("ProcessModule::execute", $this, "changeModuleService");
 		}
 
 		if($this->input->post->wmt_update_template_files) {
@@ -46,8 +45,8 @@ class WireMangaTheme extends Process {
 
 	public function cacheChapters(HookEvent $event) {
 		$page = $event->arguments[0];
-		$cache = wire("cache");
-		if($page->template->name == "wm_manga_single" && wire("session")->get('dontRefreshCache_' . $page->id) !== 1) {
+		$cache = $this->wire("cache");
+		if($page->template->name == "wm_manga_single" && $this->wire("session")->get('dontRefreshCache_' . $page->id) !== 1) {
 			$cache->delete("chapters:" . $page->id);
 			$cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page){
 				return $this->chapterListMarkup($page);
@@ -63,17 +62,17 @@ class WireMangaTheme extends Process {
 	}
 
 	/**
-	* Chapters markup to cache
-	*
-	* used to cache chapters to keep the output consistent
-	*
-	* @param Page $page The page containing the chapters to cache
-	*
-	*/
+	 * Chapters markup to cache
+  	 *
+	 * used to cache chapters to keep the output consistent
+	 *
+	 * @param Page $page The page containing the chapters to cache
+	 *
+	 */
 	public function chapterListMarkup(Page $page) {
 		$chapters = $this->wire("settings")->wm_no_chapters;
 		if($page->children->count) {
-			$chapters = wire("wm")->chaptersList($page);
+			$chapters = $this->wire("wm")->chaptersList($page);
 		}
 		return $chapters;
 	}
@@ -88,9 +87,9 @@ class WireMangaTheme extends Process {
 	}
 
 	public function changeModuleService(HookEvent $event) {
-		if($_GET["update"] === "WireMangaTheme") {
-			wire("config")->moduleServiceURL = 'http://modules.wiremanga.com/module/';
-			wire("config")->moduleServiceKey = (__NAMESPACE__ ? 'pw300' : 'pw280');
+		if($this->input->get->update === "WireMangaTheme") {
+			$this->wire("config")->moduleServiceURL = 'http://modules.wiremanga.com/module/';
+			$this->wire("config")->moduleServiceKey = (__NAMESPACE__ ? 'pw300' : 'pw280');
 		}
 	}
 
