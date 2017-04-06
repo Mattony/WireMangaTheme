@@ -39,7 +39,7 @@ class WireMangaTheme extends Process {
 			$wmtSetup->copyFiles($this->config->paths->siteModules . "WireMangaTheme/TemplateFiles/", $this->config->paths->templates);
 			$this->input->post->wmt_update_template_files = 0;
 		}
-		if($this->input->post->wmt_clean_up) {
+		if($this->input->post->wmt_clean_up && !$this->input->post->uninstall) {
 			$this->input->post->wmt_clean_up = 0;
 		}
 	}
