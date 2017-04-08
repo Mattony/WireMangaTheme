@@ -1,4 +1,23 @@
 <?php namespace ProcessWire;
+// change images display mode 
+$valid_values = [0, 1];
+if($input->post->submit_rs && in_array($input->post->display_mode, $valid_values)) {
+	if($user->isLoggedin()) {
+		$user->of(false);
+		$user->wm_all_images = $input->post->display_mode;
+		$user->save();
+	}
+	else {
+		$session->set("display_mode", $input->post->display_mode);
+	}
+}
+// determine images display mode
+if($user->isLoggedin()) {
+	$show_all_chapter_images = $user->wm_all_images;
+}
+if(!$user->isLoggedin()) {
+	$show_all_chapter_images = $session->get("display_mode");
+}
 
 // get javascript configuration
 $oldConfigJS = "<script> var config = {$jsVars}; </script>";
@@ -14,20 +33,6 @@ $footerAssets .= "<script src='{$config->urls->templates}assets/js/manga-reader.
 //over write old js config with new one
 $headerAssets = str_replace($oldConfigJS, $newConfigJS, $headerAssets);
 
-// determine images display mode
-if($settings->wm_all_images == 0) {
-	$show_all_chapter_images = 0;
-}
-if($settings->wm_all_images == 1) {
-	$show_all_chapter_images = 1;
-}
-if($page->parent->wm_images_mode->id == 1) {
-	$show_all_chapter_images = 0;
-}
-if($page->parent->wm_images_mode->id == 2) {
-	$show_all_chapter_images = 1;
-}
-
 // redirect to a page displaying single image 
 // or all chapter images on the same page
 if(!$input->urlSegment1 && $show_all_chapter_images == 0) {
@@ -36,12 +41,10 @@ if(!$input->urlSegment1 && $show_all_chapter_images == 0) {
 elseif($input->urlSegment1 && $show_all_chapter_images == 1) {
 	$session->redirect($page->url);
 }
-// load file for the chosen display mode
-if($show_all_chapter_images == 1) {
-	$content = $files->render(__DIR__ . '/views/ReaderAll.php');
-}
-else {
-	$content = $files->render(__DIR__ . '/views/Reader.php');
-}
+
+$vars = array(
+    "show_all_chapter_images"    => $show_all_chapter_images,
+);
+$content = $files->render(__DIR__ . '/views/Reader.php', $vars);
 
 include("_main.php");

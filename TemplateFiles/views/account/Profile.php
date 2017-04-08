@@ -10,10 +10,10 @@ $u = $pages->get("template=user, name={$user->name}");
 
 ?>
 <section class='profile uk-background uk-padding'>
-	<h1 class='profile--title'><?= $user->name ?> <a href='<?= $page->parent->httpUrl ?>edit-profile' class='' title='Edit Profile'><i class='fa fa-cog' aria-hidden='true'></i></a></h1>
+	<h1 class='profile--title'><?= $user->name ?> <a href='<?= $page->httpUrl ?>edit-profile' class='' title='Edit Profile'><i class='fa fa-cog' aria-hidden='true'></i></a></h1>
 	<div class='uk-flex uk-flex-wrap'>
 		<div class='uk-padding-small'>
-			<?php if($u->wm_profile_image->first()) : ?>
+			<?php if($u->wm_profile_image) : ?>
 			<img src='<?= $u->wm_profile_image->first()->size(190,190)->url ?>' class=''>
 			<?php endif; ?>
 		</div>

@@ -52,7 +52,7 @@ class WireMangaThemeSetup extends Wire {
 	public function setArrays() {
 
 		$this->pages_ = [
-			["title" => "User", "name" => "user", "template" => "wm_account", "path" => "/"],
+			["title" => "User"          , "name" => "user"    , "template" => "wm_account" , "path" => "/"],
 			["title" => "Theme Settings", "name" => "settings", "template" => "wm_settings", "path" => "/"],
 			["title" => "Ajax"          , "name" => "ajax"    , "template" => "wm_ajax"    , "path" => "/"],
 		];
@@ -64,7 +64,6 @@ class WireMangaThemeSetup extends Wire {
 			["name" => "wm_seo_title"        , "type" => "Text"    , "add_to" => "wm_manga_single", "label" => "Seo Title", "notes" => "[SEO title](https://moz.com/learn/seo/title-tag), if not set the page title will be used."],
 			["name" => "wm_seo_description"  , "type" => "Textarea", "add_to" => "wm_manga_single", "label" => "Seo Description", "notes" => "[SEO description](https://moz.com/learn/seo/meta-description)"],
 			["name" => "wm_views"            , "type" => "Integer" , "add_to" => "wm_manga_single", "label" => "Views"],
-			["name" => "wm_images_mode"      , "type" => "Options" , "add_to" => "wm_manga_single", "label" => "Images display mode", "setOptionsString" => "One image per page\nAll chapter images on a page", "notes" => "Choose how to display chapter images.\nOverrides the setting in the settings page."],
 			["name" => "wm_menu_class"       , "type" => "Text"    , "add_to" => null             , "label" => "Class", "notes" => "Add class to the <li> tag containing the menu item."],
 			["name" => "wm_menu_URL"         , "type" => "Text"    , "add_to" => null             , "label" => "URL", "notes" => "**Internal links:** relative paths to the root url\n**External links:** url with or without http/s, must start with //\n**No href:** - (hyphen) removes the href tag completely\nLeave  blank for home page"],
 			["name" => "wm_menu_show_to"     , "type" => "Options" , "add_to" => null             , "label" => "Show To", "default" => 1, "setOptionsString" => "All Users\nLogged In Users\nLogged Out Users"],
@@ -76,7 +75,7 @@ class WireMangaThemeSetup extends Wire {
 			["name" => "wm_no_chapters"      , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "No Chapters Available Text", "notes" => "Text displayed when the manga has no chapters."],
 			["name" => "wm_before_chapters"  , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "Before Chapters Text", "notes" => "Text displayed before chapters list on manga page."],
 			["name" => "wm_limit_width"      , "type" => "Checkbox", "add_to" => "wm_settings"    , "label" => "Limit Page Width", "notes" => "When checked the page will have a max width of 1200px."],
-			["name" => "wm_all_images"       , "type" => "Checkbox", "add_to" => "wm_settings"    , "label" => "Display all chapter images", "notes" => "When checked all images of a chapter will be displayed on the same page.\nCan be overriden on the manga edit page."],
+			["name" => "wm_all_images"       , "type" => "Checkbox", "add_to" => "user"           , "label" => "Display all chapter images", "notes" => "When checked all images of a chapter will be displayed on the same page.\nCan be overriden on the manga edit page."],
 			["name" => "wm_adult_warning_off", "type" => "Checkbox", "add_to" => "user"           , "label" => "Disable Adult Warning", "notes" => "If checked the adult warning won't show anymore."],
 			["name" => "wm_hide_adult"       , "type" => "Checkbox", "add_to" => "user"           , "label" => "Hide Adult Manga", "notes" => "If checked manga marked as adult will be hidden."],
 			["name" => "wm_account_status"   , "type" => "Text"    , "add_to" => "user"           , "label" => "Account Status"],

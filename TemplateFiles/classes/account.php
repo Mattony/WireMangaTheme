@@ -75,7 +75,6 @@ class Account extends Wire {
 		$accStatus = $this->wire("settings")->wm_user_activate ? $this->generateHash(100) : "active";
 		$u->accountStatus = $accStatus;
 		$u->registrationDate = time();
-		$u->lastLoginDate = time();
 		$u->addRole("member");
 		$u->save();
 	}
@@ -104,22 +103,31 @@ class Account extends Wire {
 		$mail->send();
 	}
 
-	function registrationForm($formClass, $wrapperClass, $inputClass, $labelClass) {
+	function registrationForm() {
 		$out  = "";
-		$out .= "<form method='post' action='' class='{$formClass}'>";
-			$out .= "<div class='{$wrapperClass}'><label for='username' class='{$labelClass}'>Username</label>";
-			$out .= "<input type='text' name='username' id='username' class='{$inputClass}' placeholder='Username' value=''>";
-			$out .= "<em>Allowed characters: lowercase letters (a-z), digits (0-9), underscore (_), hyphen (-) and period (.).</em></div>";
+		$out .= "<form method='post' action='' class='form registration-form'>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='username' class='form-label uk-form-label'>Username</label>";
+				$out .= "<input type='text' name='username' id='username' class='form-input uk-input' placeholder='Username'>";
+				$out .= "<em>Allowed characters: lowercase letters (a-z), digits (0-9), underscore (_), hyphen (-) and period (.), ";
+				$out .= "don't use underscore, hyphen and period one after the other.</em>";
+			$out .= "</div>";
 
-			$out .= "<div class='{$wrapperClass}'><label for='email' class='{$labelClass}'>Email</label>";
-			$out .= "<input type='text' name='email' id='email' class='{$inputClass}' placeholder='Email' value=''></div>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='email' class='form-label uk-form-label'>Email</label>";
+				$out .= "<input type='text' name='email' id='email' class='form-input uk-input' placeholder='Email'>";
+			$out .= "</div>";
 
-			$out .= "<div class='{$wrapperClass}'><label for='password' class='{$labelClass}'>Password</label>";
-			$out .= "<input type='password' name='password' id='password' class='{$inputClass}' placeholder='Password' value=''></div>";
-			$out .= "<div class='{$wrapperClass}'><label for='_password' class='{$labelClass}'>Confirm Password</label>";
-			$out .= "<input type='password' name='_password' id='_password' class='{$inputClass}' placeholder='Confirm password' value=''></div>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='password' class='form-label uk-form-label'>Password</label>";
+				$out .= "<input type='password' name='password' id='password' class='form-input uk-input' placeholder='Password'>";
+			$out .= "</div>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='_password' class='form-label uk-form-label'>Confirm Password</label>";
+				$out .= "<input type='password' name='_password' id='_password' class='form-input uk-input' placeholder='Confirm password'>";
+			$out .= "</div>";
 
-			$out .= "<div class='{$wrapperClass}'><input type='submit' name='submit' id='' class='{$inputClass}' value='Register'></div>";
+			$out .= "<div class='form-group uk-margin-bottom'><input type='submit' name='submit' class='form-submit uk-input' value='Register'></div>";
 		$out .= "</form>";
 		return $out;
 	}
@@ -135,14 +143,18 @@ class Account extends Wire {
 	 * @return string
 	 *
 	 */
-	function loginForm($formClass, $wrapperClass, $inputClass, $labelClass) {
+	function loginForm() {
 		$out = "";
-		$out .= "<form method='post' action='./' class='{$formClass}'>";
-			$out .= "<div class='{$wrapperClass}'><label for='user' class='{$labelClass}'>Username</label>";
-			$out .= "<input type='text' name='user' id='user' class='{$inputClass}' placeholder='Username'></div>";
-			$out .= "<div class='{$wrapperClass}'><label for='pass' class='{$labelClass}'>Password</label>";
-			$out .= "<input type='password' name='pass' id='pass' class='{$inputClass}' placeholder='Password'></div>";
-			$out .= "<div class='{$wrapperClass}'><input type='submit' name='submit' id='' class='{$inputClass}' value='Login'></div>";
+		$out .= "<form method='post' action='./' class='form login-form'>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='user' class='form-label uk-form-label'>Username</label>";
+				$out .= "<input type='text' name='user' id='user' class='form-input uk-input' placeholder='Username'>";
+			$out .= "</div>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='pass' class='form-label uk-form-label'>Password</label>";
+				$out .= "<input type='password' name='pass' id='pass' class='form-input uk-input' placeholder='Password'>";
+			$out .= "</div>";
+			$out .= "<div class='form-group uk-margin-bottom'><input type='submit' name='submit' id='' class='form-submit uk-input' value='Login'></div>";
 		$out .= "</form>";
 		return $out;
 	}
@@ -157,13 +169,11 @@ class Account extends Wire {
 		// {
 		// 	$session->redirect($this->wire("config")->urls->httpRoot);
 		// }
-		if($this->wire("input")->post->submit && $this->wire("input")->post->user && $this->wire("input")->post->pass)
-		{
+		if($this->wire("input")->post->submit && $this->wire("input")->post->user && $this->wire("input")->post->pass) {
 			$username = $this->wire("sanitizer")->pageName($this->wire("input")->post->user);
 			$pass = $this->wire("input")->post->pass;
 			$u = $this->wire("pages")->get("template=user, name={$username}");
-			if($this->wire("session")->login($username, $pass))
-			{
+			if($this->wire("session")->login($username, $pass)) {
 				$redirectTo = $this->wire("page")->parent->url;
 				$this->wire("session")->redirect("{$redirectTo}profile");
 			}
@@ -182,13 +192,6 @@ class Account extends Wire {
 			$pass  = $this->wire("input")->post->password;
 			$_pass = $this->wire("input")->post->_password;
 			$u = $this->wire("pages")->get("template=user, name={$user->name}");
-			$upload_path = $this->wire("config")->paths->assets . "files/tmp/";
-			$maxFileSize = 5;
-			$ext = array("jpg", "jpeg", "png", "gif");
-
-			if(!is_dir($upload_path)) {
-				if(!wireMkdir($upload_path)) throw new WireException("No upload path!");
-			}
 
 			if($this->wire("input")->post->hidden_profile_image) {
 				$this->uploadBase64Image($u, $base64String);
@@ -253,6 +256,12 @@ class Account extends Wire {
 	 *
 	 */
 	protected function uploadWUImage($user, $fieldName) {
+		$upload_path = $this->wire("config")->paths->assets . "files/tmp/";
+		if(!is_dir($upload_path)) {
+			if(!wireMkdir($upload_path)) throw new WireException("No upload path!");
+		}
+		$maxFileSize = 5;
+		$ext = array("jpg", "jpeg", "png", "gif");
 		$f = new WireUpload($fieldName);
 		$f->setMaxFiles(1);
 		$f->setMaxFileSize($maxFileSize*1024*1024);
@@ -274,42 +283,44 @@ class Account extends Wire {
 		}
 	}
 
-	public function editProfileForm($formClass, $wrapperClass, $inputClass, $labelClass) {
+	public function editProfileForm() {
 
 		$u = $this->wire("pages")->get("template=user, name={$this->wire("user")->name}");
-		$profileImage = "<img src='{$u->wm_profile_image->first()->size(190, 190)->url}' id='current-profile-image'>";
+		$profileImage = $u->wm_profile_image ? "<img src='{$u->wm_profile_image->first()->size(190, 190)->url}' id='current-profile-image'>" : "";
 
 		$out = "";
-		$out .= "<form class='{$formClass}' method='post' action='' enctype='multipart/form-data'>";
+		$out .= "<form class='form edit-profile-form' method='post' enctype='multipart/form-data'>";
 
-			$out .= "<div class='{$wrapperClass}'>";
-				$out .= "<label for='profile-image' id='profile-image-label' class='edit-profile--label'>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='profile-image' id='profile-image-label' class='form-label edit-profile--label'>";
 					$out .= "<div><strong>Select New Avatar</strong></div>";
 					$out .= $profileImage;
 				$out .= "</label>";
 
-				$out .= "<input type='file' name='profile_image' id='profile-image' class='{$inputClass}'>";
-				$out .= "<input type='hidden' name='hidden_profile_image' id='hidden-profile-image' class='{$inputClass}'>";
+				$out .= "<input type='file' name='profile_image' id='profile-image' class='form-input uk-input'>";
+				$out .= "<input type='hidden' name='hidden_profile_image' id='hidden-profile-image' class='form-input uk-input'>";
 
-				$out .= "<div id='cropper-container' class='profile-image'>"; // class must be same as input id
+				$out .= "<div id='cropper-container' class='profile-image'>";
 					$out .= "<img id='image' src='#'>";
 					$out .= "";
 				$out .= "</div>";
 			$out .= "</div>";
 
-			$out .= "<div class='{$wrapperClass}'>";
-				$out .= "<label for='email' class='{$labelClass}'>Email</label>";
-				$out .= "<input type='text' name='email' placeholder='Email' value='{$u->email}' id='' class='{$inputClass}'>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='email' class='form-label uk-form-label'>Email</label>";
+				$out .= "<input type='text' name='email' placeholder='Email' value='{$u->email}' id='email' class='form-input uk-input'>";
 			$out .= "</div>";
 
-			$out .= "<div class='{$wrapperClass}'>";
-				$out .= "<label for='password' class='{$labelClass}'>Password</label>";
-				$out .= "<input type='password' name='password' placeholder='password' id='' class='{$inputClass}'></div>";
-				$out .= "<div class='{$wrapperClass}'><label for='_password' class='{$labelClass}'>Confirm Password</label>";
-				$out .= "<input type='password' name='_password' placeholder='confirm password' id='' class='{$inputClass}'>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='password' class='form-label uk-form-label'>Password</label>";
+				$out .= "<input type='password' name='password' placeholder='password' id='password' class='form-input uk-input'>";
+			$out .= "</div>";
+			$out .= "<div class='form-group uk-margin-bottom'>";
+				$out .= "<label for='_password' class='form-label uk-form-label'>Confirm Password</label>";
+				$out .= "<input type='password' name='_password' placeholder='confirm password' id='_password' class='form-input uk-input'>";
 			$out .= "</div>";
 
-			$out .= "<div class='{$wrapperClass}'><input type='submit' name='submit' id='' class='{$inputClass}' value='Edit'></div>";
+			$out .= "<div class='form-group uk-margin-bottom'><input type='submit' name='submit' id='' class='form-submit uk-button uk-button-primary uk-width-1-1' value='Edit'></div>";
 		$out .= "</form>";
 		return $out;
 	}

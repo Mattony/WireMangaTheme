@@ -12,6 +12,6 @@ $account->editProfile(); ?>
 	<div class="edit-profile--main">
 		<div class=""></div>
 		<!-- Displays the form -->
-		<?= $account->editProfileForm("", "uk-margin-bottom fieldWrapper", "uk-input", "uk-form-label"); ?>
+		<?= $account->editProfileForm(); ?>
 	</div>
 </section>

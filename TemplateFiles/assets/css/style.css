@@ -339,7 +339,7 @@ ul,li{list-style: none}
 }
 
 /* Edit Profile */
-.fieldWrapper:first-child label {
+.edit-profile-form .form-group:first-child label {
 	border: 2px dashed #ccc;
 	display: block;
 	margin: auto;
@@ -347,12 +347,12 @@ ul,li{list-style: none}
 	text-align: center;
 }
 
-.fieldWrapper:first-child label:hover {
+.edit-profile-form .form-group:first-child label:hover {
 	cursor: pointer;
 	border-color: #1e87f0;
 }
 
-.fieldWrapper:first-child input {
+.edit-profile-form .form-group:first-child input {
 	display: none;
 }
 
@@ -370,8 +370,10 @@ ul,li{list-style: none}
 }
 
 .reader--header {
+	align-items: center;
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
 	justify-content: space-between;
 	margin: auto;
 	width: 100%;
@@ -382,7 +384,7 @@ ul,li{list-style: none}
 }
 
 .reader--nav-left a {
-	padding: 10px;
+	padding: 0 10px;
 	display: block;
 }
 

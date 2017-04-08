@@ -43,6 +43,10 @@ class WireMangaTheme extends Process {
 		}
 	}
 
+	public function upgrade($fromVersion, $toVersion) {
+		$this->message("Upgarded from {$fromVersion} to {$toVersion}");
+	}
+
 	public function cacheChapters(HookEvent $event) {
 		$page = $event->arguments[0];
 		$cache = $this->wire("cache");
@@ -92,5 +96,4 @@ class WireMangaTheme extends Process {
 			$this->wire("config")->moduleServiceKey = (__NAMESPACE__ ? 'pw300' : 'pw280');
 		}
 	}
-
 }
