@@ -58,29 +58,34 @@ class WireMangaThemeSetup extends Wire {
 		];
 		
 		$this->fields_ = [
-			["name" => "wm_adult"            , "type" => "Checkbox", "add_to" => "wm_manga_single", "label" => "Adult", "notes" => "If checked there will be a warning before showing the manga page."],
-			["name" => "wm_site_url"         , "type" => "Text"    , "add_to" => null             , "label" => "External Url"],
-			["name" => "wm_sites"            , "type" => "Repeater", "add_to" => "wm_manga_single", "label" => "External Sites", "fields" => "title wm_site_url", "notes" => "Sites with more information about the manga."],
-			["name" => "wm_seo_title"        , "type" => "Text"    , "add_to" => "wm_manga_single", "label" => "Seo Title", "notes" => "[SEO title](https://moz.com/learn/seo/title-tag), if not set the page title will be used."],
-			["name" => "wm_seo_description"  , "type" => "Textarea", "add_to" => "wm_manga_single", "label" => "Seo Description", "notes" => "[SEO description](https://moz.com/learn/seo/meta-description)"],
-			["name" => "wm_views"            , "type" => "Integer" , "add_to" => "wm_manga_single", "label" => "Views"],
-			["name" => "wm_menu_class"       , "type" => "Text"    , "add_to" => null             , "label" => "Class", "notes" => "Add class to the <li> tag containing the menu item."],
-			["name" => "wm_menu_URL"         , "type" => "Text"    , "add_to" => null             , "label" => "URL", "notes" => "**Internal links:** relative paths to the root url\n**External links:** url with or without http/s, must start with //\n**No href:** - (hyphen) removes the href tag completely\nLeave  blank for home page"],
-			["name" => "wm_menu_show_to"     , "type" => "Options" , "add_to" => null             , "label" => "Show To", "default" => 1, "setOptionsString" => "All Users\nLogged In Users\nLogged Out Users"],
-			["name" => "wm_user_activate"    , "type" => "Checkbox", "add_to" => "wm_settings"    , "label" => "Require Account Activation", "notes" => "If checked users will need to activate their account (through email) before being able to use it."],
-			["name" => "wm_site_name"        , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "Site Name", "notes" => "Used in the title tag and emails."],
-			["name" => "wm_site_title_sep"   , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "Site Title Separator", "notes" => "Used in the title tag."],
-			["name" => "wm_site_email"       , "type" => "Email"   , "add_to" => "wm_settings"    , "label" => "Site Email", "notes" => "Emails will be sent from this address."],
-			["name" => "wm_menu"             , "type" => "Repeater", "add_to" => "wm_settings"    , "label" => "Menu", "fields" => "title wm_menu_URL wm_menu_class wm_menu_show_to"],
-			["name" => "wm_no_chapters"      , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "No Chapters Available Text", "notes" => "Text displayed when the manga has no chapters."],
-			["name" => "wm_before_chapters"  , "type" => "Text"    , "add_to" => "wm_settings"    , "label" => "Before Chapters Text", "notes" => "Text displayed before chapters list on manga page."],
-			["name" => "wm_limit_width"      , "type" => "Checkbox", "add_to" => "wm_settings"    , "label" => "Limit Page Width", "notes" => "When checked the page will have a max width of 1200px."],
-			["name" => "wm_all_images"       , "type" => "Checkbox", "add_to" => "user"           , "label" => "Display all chapter images", "notes" => "When checked all images of a chapter will be displayed on the same page.\nCan be overriden on the manga edit page."],
-			["name" => "wm_adult_warning_off", "type" => "Checkbox", "add_to" => "user"           , "label" => "Disable Adult Warning", "notes" => "If checked the adult warning won't show anymore."],
-			["name" => "wm_hide_adult"       , "type" => "Checkbox", "add_to" => "user"           , "label" => "Hide Adult Manga", "notes" => "If checked manga marked as adult will be hidden."],
-			["name" => "wm_account_status"   , "type" => "Text"    , "add_to" => "user"           , "label" => "Account Status"],
-			["name" => "wm_profile_image"    , "type" => "Image"   , "add_to" => "user"           , "label" => "Profile Image", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
-			["name" => "wm_registration_date", "type" => "Datetime", "add_to" => "user"           , "label" => "Registration Date"]
+		["name" => "wm_site_url"         , "type" => "Text"    , "add_to" => null  , "label" => "External Url"],
+		["name" => "wm_menu_class"       , "type" => "Text"    , "add_to" => null  , "label" => "Class", "notes" => "Add class to the <li> tag containing the menu item."],
+		["name" => "wm_menu_URL"         , "type" => "Text"    , "add_to" => null  , "label" => "URL", "notes" => "**Internal links:** relative paths to the root url\n**External links:** url with or without http/s, must start with //\n**No href:** - (hyphen) removes the href tag completely\nLeave  blank for home page"],
+		["name" => "wm_menu_show_to"     , "type" => "Options" , "add_to" => null  , "label" => "Show To", "default" => 1, "setOptionsString" => "All Users\nLogged In Users\nLogged Out Users"],
+		["name" => "wm_menu_admin"       , "type" => "Checkbox", "add_to" => null  , "label" => "Admin Only", "notes" => "Visible only by admin."],
+		["name" => "wm_adult"            , "type" => "Checkbox", "add_to" => "wm_manga_single", "label" => "Adult", "notes" => "If checked there will be a warning before showing the manga page."],
+		["name" => "wm_sites"            , "type" => "Repeater", "add_to" => "wm_manga_single", "label" => "External Sites", "fields" => "title wm_site_url", "notes" => "Sites with more information about the manga."],
+		["name" => "wm_seo_title"        , "type" => "Text"    , "add_to" => "wm_manga_single", "label" => "Seo Title", "notes" => "[SEO title](https://moz.com/learn/seo/title-tag), if not set the page title will be used."],
+		["name" => "wm_seo_description"  , "type" => "Textarea", "add_to" => "wm_manga_single", "label" => "Seo Description", "notes" => "[SEO description](https://moz.com/learn/seo/meta-description)"],
+		["name" => "wm_views"            , "type" => "Integer" , "add_to" => "wm_manga_single", "label" => "Views"],
+		["name" => "wm_manga_subs"       , "type" => "Page"    , "add_to" => "wm_manga_single", "label" => "Subscribers", "parent" => "users" , "template" => "user", "addable" => 0, "inputfield" => "InputfieldAsmSelect"],
+		["name" => "wm_logo"             , "type" => "Image"   , "add_to" => "wm_settings", "label" => "Site Logo", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
+		["name" => "wm_user_activate"    , "type" => "Checkbox", "add_to" => "wm_settings", "label" => "Require Account Activation", "notes" => "If checked users will need to activate their account (through email) before being able to use it."],
+		["name" => "wm_site_name"        , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Site Name", "notes" => "Used in the title tag and emails."],
+		["name" => "wm_site_title_sep"   , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Site Title Separator", "notes" => "Used in the title tag."],
+		["name" => "wm_site_email"       , "type" => "Email"   , "add_to" => "wm_settings", "label" => "Site Email", "notes" => "Emails will be sent from this address."],
+		["name" => "wm_no_chapters"      , "type" => "Text"    , "add_to" => "wm_settings", "label" => "No Chapters Available Text", "notes" => "Text displayed when the manga has no chapters."],
+		["name" => "wm_limit_width"      , "type" => "Checkbox", "add_to" => "wm_settings", "label" => "Limit Page Width", "notes" => "When checked the page will have a max width of 1200px."],
+		["name" => "wm_menu"             , "type" => "Repeater", "add_to" => "wm_settings", "label" => "Menu", "fields" => "title wm_menu_URL wm_menu_class wm_menu_show_to wm_menu_admin"],
+		["name" => "wm_all_images"       , "type" => "Checkbox", "add_to" => "user", "label" => "Display All Chapter Images"],
+		["name" => "wm_adult_warning_off", "type" => "Checkbox", "add_to" => "user", "label" => "Disable Adult Warning"],
+		["name" => "wm_hide_adult"       , "type" => "Checkbox", "add_to" => "user", "label" => "Hide Adult Manga"],
+		["name" => "wm_activation_code"  , "type" => "Text"    , "add_to" => "user", "label" => "Activation Code"],
+		["name" => "wm_tmp_email"        , "type" => "Text"    , "add_to" => "user", "label" => "Temporary email"],
+		["name" => "wm_email_conf_code"  , "type" => "Text"    , "add_to" => "user", "label" => "Email Change Confirmation Code"],
+		["name" => "wm_max_img_width"    , "type" => "Integer" , "add_to" => "user", "label" => "Max Image Width"],
+		["name" => "wm_profile_image"    , "type" => "Image"   , "add_to" => "user", "label" => "Profile Image", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
+		["name" => "wm_registration_date", "type" => "Datetime", "add_to" => "user", "label" => "Registration Date"]
 		];
 
 		$this->templates_ = [
@@ -190,7 +195,7 @@ class WireMangaThemeSetup extends Wire {
 					$f->inputfieldClass = "InputfieldCKEditor";
 				}
 				if($field["name"] == "wm_views") {
-					$f->collapsed = 4;
+					$f->collapsed = 7;
 				}
 				if(isset($field["default"])) {
 					$f->required = 1;
@@ -224,7 +229,7 @@ class WireMangaThemeSetup extends Wire {
 	 *
 	 */
 	public function createRepeater($repeaterName, $repeaterFields, $repeaterLabel, $template_id, $repeaterTags) {
-		$fieldsArray = explode(' ', $repeaterFields);
+		$fieldsArray = explode(" ", $repeaterFields);
 		
 		$f = new Field();
 		$f->type = $this->modules->get("FieldtypeRepeater");

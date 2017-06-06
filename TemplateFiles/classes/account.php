@@ -10,61 +10,47 @@ class Account extends Wire {
 	/**
 	 * User registration
 	 *
-	 * @return void|string
+	 * @return string
 	 *
 	 */
 	public function register() {
-		// if($this->wire('user')->isLoggedin()) {
-		// 	$this->wire('session')->redirect($this->wire('config')->urls->httpRoot);
-		// }
-
-		if( $this->wire("input")->post->submit && $this->wire("input")->post->username &&
+		if( $this->wire("input")->post->username &&
 			$this->wire("input")->post->email && $this->wire("input")->post->password ) {
 
 			$username = $this->wire("input")->post->username;
 			$email = $this->wire("input")->post->email;
 			$pass  = $this->wire("input")->post->password;
 			$_pass = $this->wire("input")->post->_password;
-
 			// Check the user input
-			if($email != $this->wire("sanitizer")->email($email)) {
-				$error = "<div class='contact-error'>Email is not valid.</div>";
-				return $error;
+			if($username !== $this->wire("sanitizer")->pageName($username, false, 25) || strlen($username) < 4 ) {
+				$this->wire("session")->set("registration_message", "<div class='message error'>Username is not valid. Username has to be between 4 and 25 characters, lowercase letters, digits, underscore, hyphen and period.</div>");
+				return false;
+			}
+			if($this->wire("users")->get($username)->id) {
+				$this->wire("session")->set("registration_message", "<div class='message error'>Username is taken.</div>");
+				return false;
+			}
+			if($email !== $this->wire("sanitizer")->email($email)) {
+				$this->wire("session")->set("registration_message", "<div class='message error'>Email is not valid.</div>");
+				return false;
 			}
 
-			if($username != $this->wire("sanitizer")->pageName($username)) {
-				$error = "<div class='contact-error'>Username is not valid.</div>";
-				return $error;
+			if(strlen($pass) && $pass !== $_pass) {
+				$this->wire("session")->set("registration_message", "<div class='message error'>Passwords don't match.</div>");
+				return false;
+			}
+			if(!$this->isValidPassword($pass)) {
+				$error = $this->wire("session")->get("password_validation");
+				$this->wire("session")->set("registration_message", "<div class='message error'>{$error}</div>");
+				return false;
 			}
 
-			if($this->wire("pages")->get("template=user, name={$username}")->id) {
-				$error = "<div class='contact-error'>Username is taken.</div>";
-				return $error;
-			}
-
-			if($pass !== $_pass) {
-				$error = "<div class='contact-error'>Passwords don't match.</div>";
-				return $error;
-			}
-
-			// Create the user
 			$this->createUser($username, $email, $pass);
-
-			$siteName = $this->wire("config")->httpHosts[0];
-			$this->sendActivationMail($email, $username, $u->accountStatus, $siteName);
-
-			// Create user list page
-			$p = new Page();
-			$p->template = "user-list";
-			$p->parent = $this->wire("pages")->get("/user/lists/");
-			$p->title = $this->wire("sanitizer")->pageName($username);
-			$p->save();
-			$site = $this->wire("config")->urls->httpRoot;
-
-			$message = "<div class='contact-succes'>Your account has been created!</div>";
-			$this->wire('session')->set("registrationMessage", $message);
-			$this->wire('session')->redirect($this->wire('page')->url);
+			$this->sendActivationMail($email, $username, $u->activation_code);
+			return true;
 		}
+		$this->wire("session")->set("registration_message", "<div class='message error'>All fields are required.</div>");
+		return false;
 	}
 
 	public function createUser($username, $email, $pass) {
@@ -72,161 +58,224 @@ class Account extends Wire {
 		$u->name = $username;
 		$u->email = $email;
 		$u->pass = $pass;
-		$accStatus = $this->wire("settings")->wm_user_activate ? $this->generateHash(100) : "active";
-		$u->accountStatus = $accStatus;
+		$u->activation_code = $this->wire("settings")->wm_user_activate ? $this->generateHash(100) : "0";
 		$u->registrationDate = time();
 		$u->addRole("member");
-		$u->save();
+		return $u->save();
 	}
 
 	public function generateHash($length) {
 		$rand = new Password();
-		$hash = $rand->randomBase64String($length);
-		return $hash;
+		return $rand->randomBase64String($length);
 	}
 
-	public function sendActivationMail($toEmail, $username, $hash, $siteName) {
+	public function sendActivationMail($to, $username, $hash) {
 		// Send activation code
 		$activationLink = $this->wire("config")->urls->httpRoot."user/activate/?user=".$username."&hash=".$hash;
+		$site = $this->wire("config")->urls->httpRoot;
+		$siteName = $this->wire("settings")->wm_site_name;
 
 		// Messaged sent to user
-		$emailMessage  = "Hi {$username}<br><strong>Thank you for signing up at {$site}.</strong><br>";
+		$emailMessage  = "Hi {$username}!<br><strong>Thank you for signing up at {$site}.</strong><br>";
 		$emailMessage .= "Please verify your email address by clicking the link below!";
 		$emailMessage .= "<br><br>Activation Link: <a href='{$activationLink}'>{$activationLink}</a>";
 
 		// send email
 		$mail = wireMail();
-		$mail->to($toEmail);
+		$mail->to($to);
 		$mail->from($this->wire("settings")->wm_site_email);
 		$mail->subject("Email verification @ {$this->wire("config")->wmSiteName}");
 		$mail->bodyHTML($emailMessage);
-		$mail->send();
-	}
-
-	function registrationForm() {
-		$out  = "";
-		$out .= "<form method='post' action='' class='form registration-form'>";
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='username' class='form-label uk-form-label'>Username</label>";
-				$out .= "<input type='text' name='username' id='username' class='form-input uk-input' placeholder='Username'>";
-				$out .= "<em>Allowed characters: lowercase letters (a-z), digits (0-9), underscore (_), hyphen (-) and period (.), ";
-				$out .= "don't use underscore, hyphen and period one after the other.</em>";
-			$out .= "</div>";
-
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='email' class='form-label uk-form-label'>Email</label>";
-				$out .= "<input type='text' name='email' id='email' class='form-input uk-input' placeholder='Email'>";
-			$out .= "</div>";
-
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='password' class='form-label uk-form-label'>Password</label>";
-				$out .= "<input type='password' name='password' id='password' class='form-input uk-input' placeholder='Password'>";
-			$out .= "</div>";
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='_password' class='form-label uk-form-label'>Confirm Password</label>";
-				$out .= "<input type='password' name='_password' id='_password' class='form-input uk-input' placeholder='Confirm password'>";
-			$out .= "</div>";
-
-			$out .= "<div class='form-group uk-margin-bottom'><input type='submit' name='submit' class='form-submit uk-input' value='Register'></div>";
-		$out .= "</form>";
-		return $out;
+		return $mail->send();
 	}
 
 	/**
-	 * Display login form
+	 * Activate user account
 	 *
-	 * @param string $formClass Class for the form
-	 * @param string $wrapperClass Class for the wrapper of the label and input
-	 * @param string $inputClass Class for the input
-	 * @param string $labelClass Class for the label
+	 * @param string $username 
+	 * @param string $hash compare with value saved on registration
 	 *
-	 * @return string
-	 *
+	 * @return bool
 	 */
-	function loginForm() {
-		$out = "";
-		$out .= "<form method='post' action='./' class='form login-form'>";
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='user' class='form-label uk-form-label'>Username</label>";
-				$out .= "<input type='text' name='user' id='user' class='form-input uk-input' placeholder='Username'>";
-			$out .= "</div>";
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='pass' class='form-label uk-form-label'>Password</label>";
-				$out .= "<input type='password' name='pass' id='pass' class='form-input uk-input' placeholder='Password'>";
-			$out .= "</div>";
-			$out .= "<div class='form-group uk-margin-bottom'><input type='submit' name='submit' id='' class='form-submit uk-input' value='Login'></div>";
-		$out .= "</form>";
-		return $out;
-	}
-
-	/**
-	 * Login user when form is submitted
-	 *
-	 * @return void
-	 */
-	public function loginUser() {
-		// if($this->wire("user")->isLoggedin())
-		// {
-		// 	$session->redirect($this->wire("config")->urls->httpRoot);
-		// }
-		if($this->wire("input")->post->submit && $this->wire("input")->post->user && $this->wire("input")->post->pass) {
-			$username = $this->wire("sanitizer")->pageName($this->wire("input")->post->user);
-			$pass = $this->wire("input")->post->pass;
-			$u = $this->wire("pages")->get("template=user, name={$username}");
-			if($this->wire("session")->login($username, $pass)) {
-				$redirectTo = $this->wire("page")->parent->url;
-				$this->wire("session")->redirect("{$redirectTo}profile");
-			}
+	public function activateUserAccount($username, $hash) {
+		$username = $sanitizer->pageName($username);
+		$u = $this->wire("users")->get($username);
+		if($u->id && strcmp($u->activation_code, $hash) === 0) {
+			$u->of(false);
+			$u->activation_code = 0;
+			return $u->save();
+		} else {
+			return false;
 		}
 	}
+
 
 	/**
 	 * Process the edit profile form
 	 *
+	 * @return bool
 	 */
 	public function editProfile() {
-		$message = "";
-		if($this->wire("input")->post->submit) {
-			$user  = $this->wire("user");
-			$email = $this->wire("input")->post->email;
-			$pass  = $this->wire("input")->post->password;
-			$_pass = $this->wire("input")->post->_password;
-			$u = $this->wire("pages")->get("template=user, name={$user->name}");
+		$user  = $this->wire("user");
+		$email = $this->wire("input")->post->email;
+		
+		$hideAdult = $this->wire("input")->post->wm_hide_adult;
+		$adultWarning = $this->wire("input")->post->wm_adult_warning_off;
+		$pass  = $this->wire("input")->post->password;
+		$_pass = $this->wire("input")->post->_password;
+		$passRules = $this->wire("fields")->get("pass");
+		$u = $this->wire("pages")->get("template=user, name={$user->name}");
 
-			if($this->wire("input")->post->hidden_profile_image) {
-				$this->uploadBase64Image($u, $base64String);
-			} else {
-				$this->uploadWUImage($u, 'profile_image');
-			}
-
-			if(isset($email) && $email != $this->wire("sanitizer")->email($email)) {
-				$error = "Email is not valid.";
-				return $error;
-			}
-
-			if(isset($pass) && $pass != $_pass) {
-				$error = "Passwords don't match.";
-				return $error;
-			}
-
-			$u->of(false);
-			if(isset($email)) {
-				$u->email = $this->wire("sanitizer")->email($email);
-			}
-			if(isset($pass)){
-				$u->pass  = $pass;
-			}
-			$u->save();
-			$message = "Changes Saved";
+		if($this->wire("input")->post->hidden_profile_image) {
+			$this->uploadBase64Image($u, $base64String);
+		} else {
+			$this->uploadWUImage($u, 'profile_image');
 		}
-		return $message;
+
+		if(isset($email) && $email != $this->wire("sanitizer")->email($email)) {
+			$this->wire("session")->set("edit_message", "Email is not valid.");
+			return false;
+		}
+
+		if(isset($pass) && $pass != $_pass) {
+			$this->wire("session")->set("edit_message", "Passwords don't match.");
+			return false;
+		}
+
+		if(isset($pass) && strlen($pass) && $this->isValidPassword($pass)) {
+			$error = $this->wire("session")->get("password_validation");
+			$this->wire("session")->set("edit_message", $error);
+			return false;
+		}
+
+		$u->of(false);
+		if(isset($u, $email)) {
+			$this->saveTmpEmail($user, $email);
+			$this->sendEmailChangeConfirmation($user, $email);
+		}
+		$u->pass = $pass;
+		$u->wm_hide_adult = isset($hideAdult) ? 1 : 0;
+		$u->wm_adult_warning_off = isset($adultWarning) ? 1 : 0;
+		$u->save();
+		$this->wire("session")->set("edit_message", "Changes Saved");
+		return true;
+	}
+
+	protected function saveTmpEmail($user, $email) {
+		$user->of(false);
+		$user->wm_tmp_email = $email;
+		$user->wm_email_conf_code = $this->generateHash(100);
+		$user->save();
+	}
+
+	protected function sendEmailChangeConfirmation($user, $email) {
+		$confirmLink = "{$this->wire("config")->urls->httpRoot}?action=confirmemail&user={$user->name}&hash={$user->wm_email_conf_code}";
+		$emailMessage  = "Hi {$user->name}!<br>Please confirm the email address change by clicking the bellow link.";
+		$emailMessage .= "<a href='{$confirmLink}'>{$confirmLink}</a><br>";
+		$emailMessage .= "If you didn't initiate the change please ignore this email.";
+		$mail = wireMail();
+		$mail->to($email);
+		$mail->from($this->wire("settings")->wm_site_email);
+		$mail->subject("Email change confirmation @ {$this->wire("config")->wmSiteName}");
+		$mail->bodyHTML($emailMessage);
+		$mail->send();
+	}
+
+	public function changeUserEmail() {
+		$username = $this->wire("sanitizer")->pageName($this->wire("input")->get->user);
+		$hash = $this->wire("input")->get->hash;
+		$user = $this->wire("users")->get($username);
+		
+		if($user->wm_email_conf_code == 0) {
+			return false;
+		}
+
+		if($user->id && strcmp($user->wm_email_conf_code, $hash) === 0) {
+			$user->of(false);
+			$user->email = $user->wm_tmp_email;
+			$user->wm_tmp_email = 0;
+			$user->wm_email_conf_code = 0;
+			return $user->save();
+		}
+		return false;
+	}
+
+
+	/**
+	 * Return whether or not the given password is valid according to configured requirements
+	 * 
+	 * Exact error messages can be retrieved with $this->getErrors().
+	 * 
+	 * @param string $value Password to validate
+	 * 
+	 * @return bool
+	 * 
+	 */
+	public function isValidPassword($value) {
+		$requireLetter = 'letter';
+		$requireLowerLetter = 'lower';
+		$requireUpperLetter = 'upper';
+		$requireDigit = 'digit';
+		$requireOther = 'other';
+
+		$numErrors = 0;
+		$passRules = $this->wire("fields")->get("pass");
+		$requirements = $passRules->requirements;
+		$this->wire("session")->remove("password_validation");
+		
+		if(preg_match('/[\t\r\n]/', $value)) {
+			$this->wire("session")->set("password_validation", "Password contained invalid whitespace");
+			return false;
+		}
+
+		if(strlen($value) < $passRules->minlength) {
+			$this->wire("session")->set("password_validation", "Password is less than required number of characters");
+			return false;
+		}
+
+		if(in_array($requireLetter, $requirements)) {
+			// if(!preg_match('/[a-zA-Z]/', $value)) {
+			if(!preg_match('/\p{L}/', $value)) {
+				$this->wire("session")->set("password_validation", "Password does not contain at least one letter (a-z A-Z)");
+				return false;
+			}
+		}
+
+		if(in_array($requireLowerLetter, $requirements)) {
+			if(!preg_match('/\p{Ll}/', $value)) {
+				$this->wire("session")->set("password_validation", "Password must have at least one lowercase letter (a-z)");
+				return false;
+			}
+		}
+
+		if(in_array($requireUpperLetter, $requirements)) {
+			if(!preg_match('/\p{Lu}/', $value)) {
+				$this->wire("session")->set("password_validation", "Password must have at least one uppercase letter (A-Z)");
+				return false;
+			}
+		}
+
+		if(in_array($requireDigit, $requirements)) {
+			if(!preg_match('/\p{N}/', $value)) {
+				$this->wire("session")->set("password_validation", "Password does not contain at least one digit (0-9)");
+				return false;
+			}
+		}
+
+		if(in_array($requireOther, $requirements)) {
+			if(!preg_match('/\p{P}/', $value) && !preg_match('/\p{S}/', $value)) {
+				$this->wire("session")->set("password_validation", "Password must have at least one non-letter, non-digit character (like punctuation)");
+				return false;
+			}	
+		}
+		
+		return true;
 	}
 
 	/**
-	 * Upload image for user profile
+	 * Upload users profile image
 	 *
 	 * Used when image is set as base64 with javascript on a hidden field
-	 * the field is updated as the image is dragged/zoomed
 	 *
 	 * @param User $user Current user
 	 * @param string $base64String Image in base64 format
@@ -247,7 +296,7 @@ class Account extends Wire {
 	}
 
 	/**
-	 * Upload image for user profile
+	 * Upload users profile image
 	 *
 	 * Used when javascript is disabled
 	 *
@@ -264,7 +313,7 @@ class Account extends Wire {
 		$ext = array("jpg", "jpeg", "png", "gif");
 		$f = new WireUpload($fieldName);
 		$f->setMaxFiles(1);
-		$f->setMaxFileSize($maxFileSize*1024*1024);
+		$f->setMaxFileSize($maxFileSize*1000*1000);
 		$f->setOverwrite(true);
 		$f->setDestinationPath($upload_path);
 		$f->setValidExtensions($ext);
@@ -282,47 +331,4 @@ class Account extends Wire {
 			@unlink($upload_path . $file[0]);
 		}
 	}
-
-	public function editProfileForm() {
-
-		$u = $this->wire("pages")->get("template=user, name={$this->wire("user")->name}");
-		$profileImage = $u->wm_profile_image ? "<img src='{$u->wm_profile_image->first()->size(190, 190)->url}' id='current-profile-image'>" : "";
-
-		$out = "";
-		$out .= "<form class='form edit-profile-form' method='post' enctype='multipart/form-data'>";
-
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='profile-image' id='profile-image-label' class='form-label edit-profile--label'>";
-					$out .= "<div><strong>Select New Avatar</strong></div>";
-					$out .= $profileImage;
-				$out .= "</label>";
-
-				$out .= "<input type='file' name='profile_image' id='profile-image' class='form-input uk-input'>";
-				$out .= "<input type='hidden' name='hidden_profile_image' id='hidden-profile-image' class='form-input uk-input'>";
-
-				$out .= "<div id='cropper-container' class='profile-image'>";
-					$out .= "<img id='image' src='#'>";
-					$out .= "";
-				$out .= "</div>";
-			$out .= "</div>";
-
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='email' class='form-label uk-form-label'>Email</label>";
-				$out .= "<input type='text' name='email' placeholder='Email' value='{$u->email}' id='email' class='form-input uk-input'>";
-			$out .= "</div>";
-
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='password' class='form-label uk-form-label'>Password</label>";
-				$out .= "<input type='password' name='password' placeholder='password' id='password' class='form-input uk-input'>";
-			$out .= "</div>";
-			$out .= "<div class='form-group uk-margin-bottom'>";
-				$out .= "<label for='_password' class='form-label uk-form-label'>Confirm Password</label>";
-				$out .= "<input type='password' name='_password' placeholder='confirm password' id='_password' class='form-input uk-input'>";
-			$out .= "</div>";
-
-			$out .= "<div class='form-group uk-margin-bottom'><input type='submit' name='submit' id='' class='form-submit uk-button uk-button-primary uk-width-1-1' value='Edit'></div>";
-		$out .= "</form>";
-		return $out;
-	}
-
 }

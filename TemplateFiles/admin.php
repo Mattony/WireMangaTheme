@@ -12,5 +12,4 @@
  *
  */
 
-$config->styles->add($config->urls->templates . 'assets/css/admin.css');
 require($config->paths->adminTemplates . 'controller.php');

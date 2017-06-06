@@ -3,27 +3,31 @@
 include(__DIR__ . "/_func.php");
 include(__DIR__ . "/classes/account.php");
 $account = new Account();
-// added to selectors to hide adult manga
-$hideAdult = $user->wm_hide_adult ? "wm_adult!=1" : "";
 
-/*------------------------------------------------------------------------------
-	# SEO
-------------------------------------------------------------------------------*/
-$seoDesc = ($page->seo_description) ? $page->seo_description : $pages->get('/')->seo_description;
+// added to selectors to hide adult manga
+$hideAdultChapters = $user->wm_hide_adult ? "parent.wm_adult!=1" : "";
+$hideAdultManga = $user->wm_hide_adult ? "wm_adult!=1" : "";
+
+/**
+ * SEO
+ */
+$seoDesc = $page->seo_description ? $page->seo_description : $pages->get('/')->seo_description;
 $seoTitle = $page->wm_seo_title 
 		? "{$page->wm_seo_title} {$settings->wm_site_title_sep} {$settings->wm_site_name}" 
 		: "{$page->title} {$settings->wm_site_title_sep} {$settings->wm_site_name}";
 $relPrev = "";
 $relNext = "";
 
-/*------------------------------------------------------------------------------
-	# Assets
-------------------------------------------------------------------------------*/
+/**
+ * Assets
+ */
 // make php variables available to javascript inside the config object
-// config.ajaxUrl - url for ajax call_user_func
-// config.pageID - id of the current page
 $config->js("ajaxUrl", $pages->get("/ajax//")->httpUrl);
 $config->js("pageID", $page->id);
+if($page->template->name === "wm_chapter") {
+	$config->js("parentURL", $page->parent->httpUrl);
+	$config->js("currentChapter", $page->name);
+}
 $jsVars = json_encode($config->js());
 
 // assets added inside the head element
@@ -31,69 +35,39 @@ $headerAssets = "
 <link rel='stylesheet' href='{$config->urls->templates}assets/css/font-awesome.min.css' />
 <link rel='stylesheet' href='{$config->urls->templates}assets/css/uikit.min.css' />
 <link rel='stylesheet' href='{$config->urls->templates}assets/css/style.css' />
-
-<script src='{$config->urls->templates}assets/js/jquery-3.1.1.min.js'></script>
+<script src='{$config->urls->templates}assets/js/jquery-3.2.1.min.js'></script>
 <script> var config = {$jsVars}; </script>";
 
 // assets added before the closing body tag
 $footerAssets = "
-<script src='{$config->urls->templates}assets/js/theia-sticky-sidebar.min.js'></script>
 <script src='{$config->urls->templates}assets/js/uikit.min.js'></script>
-<script src='{$config->urls->templates}assets/js/uikit-icons.min.js'></script>
-<script src='{$config->urls->templates}assets/js/headroom.min.js'></script>
 <script src='{$config->urls->templates}assets/js/wm.js'></script>";
 
-/*------------------------------------------------------------------------------
-	# Body Classes
-------------------------------------------------------------------------------*/
-$adminClass = "admin";
+/**
+ * Body Classes
+ */
+$adminClass = $user->isSuperuser() ? "admin" : null;
 $loggedin = $user->isLoggedin() ? "logged-in" : "logged-out";
 $bodyClass = "{$loggedin} page-{$page->id} {$adminClass}";
 
-
-/*------------------------------------------------------------------------------
-	# Menu
-------------------------------------------------------------------------------*/
-$classes = [
-	"menuClass" => "header--menu uk-navbar-nav",
-	"subMenuWrapperClass" => "uk-navbar-dropdown",
-	"subMenuClass" => "header--sub-menu uk-nav uk-navbar-dropdown-nav",
-	"menuItem" => "header--menu-item",
-];
-$largeScreenMenu = menuBuilder($classes);
-
-$classes = [
-	"menuClass" => "header--menu small-screen uk-navbar-nav",
-	"subMenuWrapperClass" => "header--sub-menu-warpper",
-	"subMenuClass" => "header--sub-menu",
-	"menuItem" => "header--menu-item",
-];
-$smallScreenMenu = menuBuilder($classes);
-
-/*------------------------------------------------------------------------------
-	# Sidebar
-------------------------------------------------------------------------------*/
-$hasSidebar = false;
-// no sidebar for following templates
-if($page->template->name == "home" || $page->template->name == "terms") {
-	$bodyClass .= " has-sidebar"; // add a 'has-sidebar' class to the body element
-	$hasSidebar = true;
-	$sidebar = $files->render(__DIR__ . '/_sidebar.php');
+/**
+ * Header
+ */
+$logo = null;
+if( $settings->wm_logo->first() ) {
+	$logo = "<a class='uk-navbar-item uk-logo' href='{$config->urls->httpRoot}'><img src='{$settings->wm_logo->first()->size(250, 80)->url}'></a>";
 }
-else {
-	$sidebar = "";
-}
+$menu = menuBuilder();
 
-
-/*------------------------------------------------------------------------------
-	# Footer
-------------------------------------------------------------------------------*/
+/**
+ * Footer
+ */
 $footer = "<div class='footer--inner'></div>";
 
 
-/*------------------------------------------------------------------------------
-	# Pagination Options
-------------------------------------------------------------------------------*/
+/**
+ * Pagination Options
+ */
 $paginationOptions = [
 	"nextItemLabel"     => "Next",
 	"previousItemLabel" => "Prev",
@@ -104,3 +78,8 @@ $paginationOptions = [
 	"numPageLinks"      => 6,
 	"separatorItemClass" => "sep"
 ];
+
+
+if( file_exists(__DIR__ . "/user-settings.php")) {
+	include_once(__DIR__ . "/user-settings.php");
+}

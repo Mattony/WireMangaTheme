@@ -2,14 +2,8 @@
 
 $bodyClass .= " manga-archive";
 
-$field = $page->parent->name;
-if($field === "scan-status") {
-	$results = $pages->find("template=wm_manga_single, limit=24, wm_scan_status={$page->name}, sort=-published, sort=name");
-} elseif($field === "manga-status") {
-	$results = $pages->find("template=wm_manga_single, limit=24, wm_manga_status={$page->name}, sort=-published, sort=name");
-} else {
-	$results = $pages->find("template=wm_manga_single, limit=24, wm_{$field}={$page->name}, sort=-published, sort=name");
-}
+$field = "wm_" . str_replace("-", "_", $page->parent->name);
+$results = $pages->find("template=wm_manga_single, limit=24, {$field}={$page->name}, sort=-published, sort=name");
 
 if($input->pageNum){
 	$limit = 24;

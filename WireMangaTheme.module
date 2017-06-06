@@ -27,6 +27,7 @@ class WireMangaTheme extends Process {
 		$this->wire("wmt", $this);
 
 		$this->wire()->addHookAfter("Pages::saveReady", $this, "cacheChapters");
+		$this->wire()->addHookAfter("Pages::save", $this, "sendChapterSubscriptionEmail");
 		$this->wire()->addHookAfter("ProcessPageEdit::execute", $this, "renameChildrenTab");
 		if($this->input->get->update === "WireMangaTheme") {
 			$this->wire()->addHookBefore("ProcessModule::execute", $this, "changeModuleService");
@@ -44,24 +45,58 @@ class WireMangaTheme extends Process {
 	}
 
 	public function upgrade($fromVersion, $toVersion) {
-		$this->message("Upgarded from {$fromVersion} to {$toVersion}");
+		$this->message("Upgraded from {$fromVersion} to {$toVersion}");
+		if( $toVersion > "0.0.5" ) {}
 	}
 
+	/**
+	 * Cache chapters
+  	 *
+	 *  Regenerates chapters list cache when a manga or a chapter is saved in the back-end
+	 *
+	 * @param HookEvent $event
+	 *
+	 */
 	public function cacheChapters(HookEvent $event) {
 		$page = $event->arguments[0];
 		$cache = $this->wire("cache");
-		if($page->template->name == "wm_manga_single" && $this->wire("session")->get('dontRefreshCache_' . $page->id) !== 1) {
+		if( $page->template->name == "wm_manga_single" && $this->wire("session")->get('dontRefreshCache_' . $page->id) !== 1 ) :
 			$cache->delete("chapters:" . $page->id);
-			$cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page){
+			$cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page) {
 				return $this->chapterListMarkup($page);
 			});
-		}
-		elseif($page->template->name == "wm_chapters") {
+		elseif( $page->template->name == "wm_chapter" ) :
 			$cache->delete("chapters:" . $page->parent->id);
 			$cache->get("chapters:" . $page->parent->id, $cache::expireNever, function() use($page) {
 				return $this->chapterListMarkup($page->parent);
 			});
 			$cache->delete("siblings:" . $page->parent->id);
+		endif;
+	}
+
+	/** Send new chapter mail
+  	 *
+	 * Send an email to the subscribed users
+	 * when a new chapter is available
+	 *
+	 * @param HookEvent $event
+	 *
+	 */
+	public function sendChapterSubscriptionEmail(HookEvent $event) {
+		$page = $event->arguments[0];
+		if($page->template->name === "wm_chapter") {
+			$subs = $page->parent->wm_manga_subs;
+			foreach($subs as $sub) {
+				$message  = "A new {$page->parent->title} chapter is available here ";
+				$message .= "<a href='{$page->httpUrl}'>{$page->parent->title} {$page->title} - {$this->wire("settings")->wm_site_name}</a>";
+				// send email
+				$mail = wireMail();
+				$mail->to($sub->email);
+				$mail->from($this->wire("settings")->wm_site_email);
+				$mail->subject("{$this->wire("settings")->wm_site_name} - New {$page->parent->title} chapter {$page->title} is available");
+				$mail->bodyHTML($message);
+				$mail->send();
+			}
 		}
 	}
 

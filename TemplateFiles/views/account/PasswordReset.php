@@ -14,6 +14,7 @@ if($user->isLoggedin())
 	$(".reset-password input").addClass("uk-input");
 	$(".reset-password label").addClass("uk-form-label");
 	$(".reset-password .description").addClass("uk-text-meta");
-	$(".reset-password button").addClass("uk-input uk-margin-top");
+	$(".reset-password button").addClass("uk-button uk-margin-top");
+	$("ul").css("list-style", "none");
 </script>
 </section>

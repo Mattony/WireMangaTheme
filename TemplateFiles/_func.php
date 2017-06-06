@@ -8,6 +8,7 @@
  * @param string $sep Separator between the links
  * @param string $linkClass Class for the link
  *
+ * @return string
  */
 function getTerms($terms, $sep = "", $linkClass = "") {
 	$out = "";
@@ -27,6 +28,7 @@ function getTerms($terms, $sep = "", $linkClass = "") {
  *
  * @param CommentArray $comments
  *
+ * @return string
  */
 function getCommentsForm($page, $comments) {
 	include(__DIR__ . "/classes/customCommentForm.php");
@@ -60,11 +62,19 @@ function getCommentsForm($page, $comments) {
  *
  * @param Page $page
  * @param int $parentID The id of the parent comment
- * @param boolean $reply Show the reply button or not
  * @param string $commentClass Class for the comment container
+ * @param int $depth Comment nesting depth
+ *
+ * @return string
  *
  */
-function getComments($page, $parentID = 0, $reply = true, $commentClass = "comment") {
+function getComments($page, $parentID = 0, $commentClass = "comment", $depth = 0) {
+	$maxDepth = wire("fields")->get("wm_comments")->depth;
+	$commentDepth = $depth;
+	$showReplyLink = true;
+	if( $maxDepth == 0 || $maxDepth <= $commentDepth) {
+		$showReplyLink = false;
+	}
 	$comments = $page->wm_comments;
 	$out = "";
 	if( $parentID !== 0 ){
@@ -74,34 +84,43 @@ function getComments($page, $parentID = 0, $reply = true, $commentClass = "comme
 	{
 		if($comment->parent_id == $parentID)
 		{
-			$reply = ($reply == true) ? "<div class='comment--reply-url'><a class='CommentActionReply' data-comment-id='{$comment->id}' href='#Comment{$comment->id}'>Reply</a></div>" : "";
+			$replyLink = ($showReplyLink == true) ? "<div class='comment-reply-url'><a class='CommentActionReply' data-comment-id='{$comment->id}' href='#Comment{$comment->id}'>Reply</a></div>" : "";
 			if($comment->status < 1) continue;
 			$cite = htmlentities($comment->cite);
 			$text = htmlentities($comment->text);
 			$userID = $comment->created_users_id;
 			$u = wire("pages")->get($userID);
 			$date = date('g:ia d/m/Y', $comment->created);
-			$profileImage = $u->wm_profile_image->first()->size(200,200)->url;
+			$profileImage = $u->wm_profile_image ? "<img src='{$u->wm_profile_image->first()->size(200, 200)->url}' class='comment-user-image'>" : "";
 			$username = $u->name;
 			$out .= "
 			<div class='{$commentClass}'>
-			<article id='comment--{$comment->id}' class='comment--container'>
-				<div class='comment--user-info'>
-					<img src='{$profileImage}' class='comment--user-image'>
+			<article id='comment-{$comment->id}' class='comment-container'>
+				<div class='comment-user-info'>
+					{$profileImage}
 				</div>
-				<div class='comment--content'>
-					<div class='comment--meta'>
-						<div class='comment--author'>{$username}</div>
-						<a href='{$page->httpUrl}#comment--{$comment->id}' title='Link to comment' class='comment--url'>
+				<div class='comment-content'>
+					<div class='comment-meta'>
+						<div class='comment-author'>{$username}</div>
+						<a href='{$page->httpUrl}?show=comments#comment-{$comment->id}' title='Link to comment' class='comment-url'>
 							<time datetime='comment_date'>{$date}</time>
 						</a>
 					</div>
-				<div>{$text}</div>
-				{$reply}
+				<div class='comment-body'>{$text}</div>
+				{$replyLink}
 				</div>
 			</article>";
-			$out .= getComments($page, $comment->id, false, "comment--child");
-			$out .= "</div>";
+			$depthClass = "depth-" . ($commentDepth + 1);
+			if($commentDepth >= $maxDepth) {
+				$depthClass = "depth-" . $maxDepth;
+				$out .= "</div>";
+			}
+			
+			
+			$out .= getComments($page, $comment->id, $depthClass, $commentDepth + 1);
+			if($commentDepth < $maxDepth) {
+				$out .= "</div>";
+			}
 		}
 	}
 	return $out;
@@ -110,38 +129,33 @@ function getComments($page, $parentID = 0, $reply = true, $commentClass = "comme
 /**
  * Menu builder
  *
- * @param string $menuClass Class for the menu container
- * @param string $subMenuClass Class for the sub menu container
+ * @return string
  *
  */
-function menuBuilder($classes = []) {
+function menuBuilder() {
 	if(!wire("settings")->wm_menu->count) {
 		return;
-	}
-	if(empty($classes)) {
-		$classes = [
-			"menuClass" => "menu",
-			"subMenuWrapperClass" => "sub-menu-wrapper",
-			"subMenuClass" => "sub-menu",
-			"menuItem" => "menu-item",
-		];
 	}
 	$rootUrl = wire("config")->urls->root;
 	$menu = "";
 	$closeLast = null;
-	$selector = (wire("user")->isLoggedin()) ? "wm_menu_show_to=1|2" : "wm_menu_show_to=1|3";
+	$selector  = (wire("user")->isLoggedin()) ? "wm_menu_show_to=1|2" : "wm_menu_show_to=1|3";
+	$selector .= (wire("user")->isSuperuser()) ? ", wm_menu_admin=0|1" : ", wm_menu_admin=0";
+
 	$items = wire("settings")->wm_menu->find($selector);
 	$depth = -1;
 	foreach($items as $k => $item) {
-		$hasChild = null;
+		$hasChild     = null;
+		$hasChildIcon = null;
 		if($items->eq($k+1) && $items->eq($k+1)->depth > $item->depth) {
 			$hasChild = "has-child";
+			$hasChildIcon = "<div class='submenu-toggle'><i class='fa fa-chevron-down' aria-hidden='true'></i></div>";
 		}
 		if($item->depth > $depth) {
 			if($depth == -1) {
-				$menuWrapperOpen = "<ul class='{$classes["menuClass"]}'>";
+				$menuWrapperOpen = "<ul class='menu hidden'>";
 			} else {
-				$menuWrapperOpen = "<div class='{$classes["subMenuWrapperClass"]}'><ul class='{$classes["subMenuClass"]}'>";
+				$menuWrapperOpen = "<div class='submenu-wrap'><ul class='submenu'>";
 			}
 			$menu .= $menuWrapperOpen;
 		} else if($item->depth < $depth) {
@@ -150,7 +164,8 @@ function menuBuilder($classes = []) {
 		}
 		$href = " href='{$rootUrl}{$item->wm_menu_URL}'";
 		$title = strip_tags(wire("sanitizer")->unentities($item->title), "<i>");
-		$menu .= "<li class='{$classes["menuItem"]} {$item->wm_menu_class} {$hasChild}'><a{$href}>{$title}</a>";
+		$itemClasses = trim(preg_replace('!\s+!', ' ', "menu-item {$item->wm_menu_class} {$hasChild}"));
+		$menu .= "<li class='{$itemClasses}'><a{$href} class='menu-link'>{$title}</a>{$hasChildIcon}";
 		$depth = $item->depth;
 	}
 	while($depth--) $menu .= "</ul>";
@@ -158,3 +173,148 @@ function menuBuilder($classes = []) {
 	return $menu;
 }
 
+
+/**
+ * Adult Notice
+ *
+ * @param Page $page Page to redirect once accepted
+ * @param Page $parent Page to check for adult content
+ *
+ * @return string
+ *
+ */
+function adultNotice($page, $parent) {
+	$user    = wire("user");
+	$input   = wire("input");
+	$session = wire("session");
+	$out     = false;
+	// set an adult content session variable
+	// preventing the adult content notice from appearing again during a session
+	if($input->post->show_adult) {
+		$session->set("adult", true);
+		$session->redirect($page->httpUrl);
+	}
+	
+	// show the adult content notice
+	// if not disabled and the adult content session variable was not set
+	if($parent->wm_adult && !$session->get("adult") && !$user->wm_adult_warning_off) {
+		$out = "<div class='uk-flex'>";
+			$out .= "<div class='uk-width-xxlarge uk-margin-auto uk-text-center uk-text-lead'>";
+			$out .= "This manga contains adult content.<br>";
+			$out .= "Clicking the below button will remove this warning and remember your choice for the duration of your session. ";
+			$out .= "<form method='post'>";
+			$out .= "<input type='submit' name='show_adult' value='OK' class='uk-input uk-margin-top uk-button uk-button-danger'>";
+			$out .= "</form>";
+			$out .= "</div>";
+		$out .= "</div>";
+	}
+	return $out;
+}
+
+/**
+ * View Counter
+ *
+ * @return string
+ *
+ */
+function viewCounter() {
+	$page    = wire("page");
+	$session = wire("session");
+	// increase views by one if it is a new session
+	if($session->get('viewed:'.$page->id) != 1) {
+		// prevent clearing of chapter list cache
+		// by setting a session variable
+		$session->set('dontRefreshCache:'.$page->id, 1);
+
+		// increment views and save page
+		$page->of(false);
+		$page->wm_views = $page->wm_views + 1;
+		$page->save("wm_views");
+
+		// clear session variable so cache can be cleared
+		$session->set('dontRefreshCache:'.$page->id, 0);
+		// set page as viewed so it doesn't increment again this session
+		$session->set('viewed:'.$page->id, 1);
+	}
+}
+
+
+/**
+ * Reader Settings
+ *
+ * @return array
+ *
+ */
+function readerSettings() {
+	$page    = wire("page");
+	$user    = wire("user");
+	$input   = wire("input");
+	$session = wire("session");
+
+	$valid_values = [0, 1];
+	if($input->post->submit_rs && in_array($input->post->show_all_ch_images, $valid_values)) {
+		if($user->isLoggedin()) {
+			// save settings to user profile
+			$user->of(false);
+			$user->wm_all_images = $input->post->show_all_ch_images;
+			$user->wm_max_img_width = (int) $input->post->max_img_width;
+			$user->save();
+		}
+		else {
+			// save settings to user session
+			$session->set("show_all_ch_images", $input->post->show_all_ch_images);
+			$session->set("max_img_width", $input->post->max_img_width);
+		}
+	}
+
+	$settings = [];
+	if($user->isLoggedin()) {
+		// get settings from user profile
+		$settings["show_all_ch_images"] = $user->wm_all_images;
+		$settings["width"] = 1000;
+		if($user->wm_max_img_width) {
+			$settings["width"] = $user->wm_max_img_width;
+		}
+	} else {
+		// get settings from user profile
+		$settings["show_all_ch_images"] = $session->get("show_all_ch_images");
+		$settings["width"] = 1000;
+		if($session->get("max_img_width")) {
+			$settings["width"] = $session->get("max_img_width");
+		}
+	}
+	// redirect to a page displaying single image 
+	// or all chapter images on the same page
+	if(!$input->urlSegment1 && $settings["show_all_ch_images"] == 0) {
+		$session->redirect($page->url . "1/");
+	}
+	elseif($input->urlSegment1 && $settings["show_all_ch_images"] == 1) {
+		$session->redirect($page->url);
+	}
+	return $settings;
+}
+
+
+
+/**
+ * Subscribe user to manga 
+ *
+ * Adds user to list of users emailed 
+ * when a new chapter is added to the manga they subscribed
+ *
+ * @param Page $page Page the user subscribes to
+ * @param User $user User that subscribes to the page
+ *
+ * @return bool
+ */
+
+function subscribeUserToManga($page, $user) {
+	$page->of(false);
+	$page->wm_manga_subs = $user;
+	return $page->save("wm_manga_subs");
+}
+function unsubscribeUserFromManga($page, $user) {
+	$page->of(false);
+	$page->wm_manga_subs->remove($user);
+	return $page->save("wm_manga_subs");
+}

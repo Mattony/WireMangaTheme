@@ -1,12 +1,5 @@
 <?php namespace ProcessWire;
 
-// if displaying of adult content was accepted, set a session variable
-// that prevents the adult content warning from appearing again during a session
-if($input->post->showAdult) {
-	$session->set("adult", true);
-	$session->redirect($page->httpUrl);
-}
-
 $bodyClass .= " manga-single";
 
 // get the chached chapter list
@@ -31,57 +24,47 @@ if($fredi = $modules->get("Fredi")) {
 $headerAssets .= "<script type='text/javascript' src='{$config->urls->templates}assets/js/comments.js'></script>";
 
 $commentForm = getCommentsForm($page, $page->wm_comments);
-$comments = getComments($page);
-$commentsHtml = $commentForm . $comments;
+$comments = $commentForm . getComments($page);
 
 // variables sent to the view file
 $vars = array(
     "chapters"    => $chapters,
-    "authors"     => getTerms($page->wm_authors, ",", ""),
-    "artists"     => getTerms($page->wm_artists, ",", ""),
-    "genres"      => getTerms($page->wm_genres , ",", ""),
-    "type"        => getTerms($page->wm_type  , ",", ""),
+    "authors"     => getTerms($page->wm_author, ",", ""),
+    "artists"     => getTerms($page->wm_artist, ",", ""),
+    "genres"      => getTerms($page->wm_genre, ",", ""),
+    "type"        => getTerms($page->wm_type, ",", ""),
     "mangaStatus" => getTerms($page->wm_manga_status, ",", ""),
     "scanlation"  => getTerms($page->wm_scan_status , ",", ""),
     "alt_titles"  => $page->wm_alt_titles,
     "description" => $page->wm_description,
     "fredi"       => $fredi,
-	"comments"    => $commentsHtml
+    "chaptersTabClass" => "tab-active",
+	"commentsTabClass" => "",
+	"comments" => ""
+	
 );
 
+if($input->get->show === "comments") {
+    $vars["comments"] = $comments;
+    $vars["chapters"] = "";
+	$vars["chaptersTabClass"] = "";
+	$vars["commentsTabClass"] = "tab-active";
+}
+
+if($input->post->manga_subscribe && $user->isLoggedin()) {
+    subscribeUserToManga($page, $user);
+}
+if($input->post->manga_unsubscribe && $user->isLoggedin()) {
+    unsubscribeUserFromManga($page, $user);
+}
 // if manga is marked as adult
 // and user didn't enable the display of adult content
 // show the adult content warning
-if($page->wm_adult && !$session->get("adult") && !$user->wm_adult_warning_off) {
-	$out  = "<div class='uk-flex'>";
-		$out .= "<div class='uk-width-xxlarge uk-margin-auto uk-text-center uk-text-lead'>";
-		$out .= "This manga contains adult content.<br>";
-		$out .= "Clicking the below button will remove this warning and remember your choice for the duration of your session. ";
-		$out .= "<form method='post'>";
-		$out .= "<input type='submit' name='showAdult' value='OK' class='uk-input uk-margin-top uk-button uk-button-danger'>";
-		$out .= "</form>";
-		$out .= "</div>";
-	$out .= "</div>";
-	$content = $out;
-}
-else {
+$content = adultNotice($page, $page);
+if(!$content) {
 	$content = $files->render(__DIR__ . "/views/MangaSingle.php", $vars);
+    viewCounter();
 }
+
 include("_main.php");
 
-// increase views by one if it is a new session
-if($session->get('viewed_'.$page->id) !== 1) {
-	// prevent clearing of chapter list cache
-	// by setting a session variable
-	$session->set('dontRefreshCache_'.$page->id, 1);
-
-	// increment views and save page
-	$page->of(false);
-	$page->views++;
-	$page->save("views");
-
-	// clear session variable so cache can be cleared
-	$session->set('dontRefreshCache_'.$page->id, 0);
-	// set page as viewed so it doesn't increment again this session
-	$session->set('viewed_'.$page->id, 1);
-}

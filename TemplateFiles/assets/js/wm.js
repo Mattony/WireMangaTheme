@@ -1,79 +1,81 @@
 $(document).ready(function(){
 
-	// sticky sidebar
-	if (typeof $('.widget-area, .content-area').theiaStickySidebar !== "undefined") {
-		$('.main-content, .secondary-content').theiaStickySidebar({
-		// Settings
-		additionalMarginTop: 30,
-		additionalMarginBottom: 30
-		});
-    };
+// Menu toggles
+$(document).on("click", ".menu-toggle", function(){
+	$(".menu").toggle(300);
+});
+$(document).on("click", ".submenu-toggle", function(e){
+	e.stopPropagation();
+	var thisIcon = $(this).children(".fa");
+	var thisSubWrap = $(this).siblings(".submenu-wrap");
+
+	$(".submenu-wrap").not(thisSubWrap).hide();
+	$(".fa-chevron-up").not(thisIcon).addClass("fa-chevron-down").removeClass("fa-chevron-up");
+
+	thisIcon.toggleClass("fa-chevron-down fa-chevron-up");
+	thisSubWrap.toggle(200);
+});
+
+$(document).on("click", function () {
+	$(".submenu-wrap").hide();
+	$(".fa-chevron-up").addClass("fa-chevron-down").removeClass("fa-chevron-up");
+});
 
 
-	/*
-	 *------------------------------------------------------------------------------
-	 *	Headroom
-	 *------------------------------------------------------------------------------
-	 *
-	 * Show and hide main menu when scrolling
-	 *
-	 */
-	if (typeof Headroom !== "undefined") {
-		// grab an element
-		var myElement = document.querySelector(".header");
-		// construct an instance of Headroom, passing the element
-		var headroom  = new Headroom(myElement,
-			{
-				// vertical offset in px before element is first unpinned
-				offset : 200,
-				// or you can specify tolerance individually for up/down scroll
-				tolerance : {
-					up : 50,
-					down : 30
-				},
-				classes : {
-					// when element is initialised
-					initial : "menu",
-					// when scrolling up
-					pinned : "menu--pinned",
-					// when scrolling down
-					unpinned : "menu--unpinned",
-					// when above offset
-					top : "menu--top",
-					// when below offset
-					notTop : "menu--not-top",
-					// when at bottom of scoll area
-					bottom : "menu--bottom",
-					// when not at bottom of scroll area
-					notBottom : "menu--not-bottom"
-				}
-			});
-			// initialise headroom
-			headroom.init();
-	}
-
-
-	// Menu toggle for small displays
-	$(document).on("click", ".header--menu-toggle", function(){
-		$(".header--menu.small-screen").toggleClass("is-visible");
-		$(".header--menu-toggle").toggleClass("off on");
-	})
-	$(".has-child").prepend("<div class='has-child-icon'><i class='fa fa-chevron-down' aria-hidden='true'></i></div>");
-	$(document).on("click", ".has-child-icon", function(){
-		$(this).siblings('.header--sub-menu-warpper').toggle();
-	})
+/* #### AJAX #### */
 
 /*
- *------------------------------------------------------------------------------
- *	Ajax Search
- *------------------------------------------------------------------------------
+ * Manga Subscription
  *
- * Ajax search in the menu
+ * (Un)Subscribe users to manga
  *
  */
+
+$("form.subscribe").submit(function(e){
+	e.preventDefault();
+});
+$("form.unsubscribe").submit(function(e){
+	e.preventDefault();
+});
+
+$(document).on("click", ".manga-subscribe", function(){
+	var mangaID = $(".manga-subscribe").data("manga-id") || config.pageID;
+	var el = this;
+	$.ajax({
+		url: config.ajaxUrl,
+		type: "POST",
+		dataType: "json",
+		data: {
+			"action": "subscribe",
+			"pageID": mangaID
+		},
+	}).done(function(data){
+		$(el).addClass("manga-unsubscribe uk-button-danger").removeClass("manga-subscribe uk-button-primary");
+		$(el).val("Unsubscribe");
+	});
+});
+
+$(document).on("click", ".manga-unsubscribe", function(){
+	var mangaID = $(".manga-unsubscribe").data("manga-id") || config.pageID;
+	var el = this;
+	$.ajax({
+		url: config.ajaxUrl,
+		type: "POST",
+		dataType: "json",
+		data: {
+			"action": "unsubscribe",
+			"pageID": mangaID
+		},
+	}).done(function(data){
+		$(el).addClass("manga-subscribe uk-button-primary").removeClass("manga-unsubscribe uk-button-danger");
+		$(el).val("Subscribe");
+	});
+});
+
+
+// Ajax Search in the header
 function ajaxSearch() {
 	var keywords = $(".js-search-input").val();
-	console.log(keywords);
 	$(".js-search-submit").addClass("js-searching");
 	$(".js-search-submit").removeClass("js-search-submit");
 	$(".js-search-results").addClass("js-show");
@@ -91,13 +93,12 @@ function ajaxSearch() {
 		$(".js-searching").addClass("js-search-submit");
 		$(".js-searching").removeClass("js-searching");
 		$(".js-search-results").html(data.html);
-		//console.log(data);
-	})
+	});
 }
+
 var timeoutID = null;
 $(".header").on("keyup input", ".js-search-input", function(e){
-	if (this.value.length > 0) {
-		clearTimeout(timeoutID);
+	if (this.value.length > 3) {
 		timeoutID = setTimeout(ajaxSearch.bind(undefined, e.target.value), 500);
 	} else {
 		clearTimeout(timeoutID);
@@ -105,21 +106,18 @@ $(".header").on("keyup input", ".js-search-input", function(e){
 	}
 });
 
-$(".header").on("click", ".header-search--close", function(e){
+$(".header").on("click", ".header-search-close", function(e){
 	e.preventDefault();
 	$(".js-search-input").val("");
 	$(".js-search-results").html("");
 });
 
 
-
-/*
- *------------------------------------------------------------------------------
- *	Switch between chapters and comments
- *------------------------------------------------------------------------------
- */
-	function mangaToggler(action, putResultHere) {
-		$(putResultHere).html("<div class='uk-text-center'><div uk-spinner></div></div>");
+//Switch between chapters and comments
+function mangaToggler(action, putResultHere, hideThis) {
+	if($(putResultHere).is(":empty")) {
+		$(hideThis).css("display", "none");
+		$(putResultHere).html("<div class=''><div uk-spinner></div></div>");
 		$.ajax({
 			url: config.ajaxUrl,
 			type: "POST",
@@ -135,52 +133,54 @@ $(".header").on("click", ".header-search--close", function(e){
 				$(".wm-message").addClass("error");
 				$(".wm-message").html(data.message);
 			}
-		})
+		});
+	} else {
+		$(putResultHere).css("display", "block");
+		$(hideThis).css("display", "none");
 	}
+
+}
+
+$(".manga-get-chapters").on("click", function(){
+	mangaToggler("showChapters", ".manga-chapters", ".manga-comments");
+	$(".manga-get-comments").removeClass("tab-active");
+	$(".manga-get-chapters").addClass("tab-active");
+});
+$(".manga-get-comments").on("click", function(){
+	mangaToggler("showComments", ".manga-comments", ".manga-chapters");
+	$(".manga-get-chapters").removeClass("tab-active");
+	$(".manga-get-comments").addClass("tab-active");
+});
 	
-	$(".manga--get-chapters").on("click", function(){
-		mangaToggler("showChapters", ".manga--chapters-comments");
-		$(".manga--get-comments").removeClass("js-active");
-		$(".manga--get-chapters").addClass("js-active");
+
+//Ajax for manga directory
+$(".directory-manga").on("click", ".js-manga-info.js-show", function(){
+	var pageID = $(this).attr("data-id");
+	$("#"+pageID+" .js-manga-info.js-show").removeClass("js-show");
+	$.ajax({
+		url: config.ajaxUrl,
+		type: "POST",
+		dataType: "json",
+		data: {
+			"action": "showInfo",
+			"pageID": pageID
+		},
+	}).done(function(data){
+		$("#"+pageID+" .js-manga-info").addClass("js-hide");
+		$("#"+pageID+" .js-directory-ajax-content").html(data);
+		$("#"+pageID+" .js-manga-info.js-hide .fa").replaceWith("<i class='fa fa-times-circle' aria-hidden='true'></i>");
+		$("#"+pageID+".directory-manga").toggleClass("js-visible");
 	});
-	$(".manga--get-comments").on("click", function(){
-		mangaToggler("showComments", ".manga--chapters-comments");
-		$(".manga--get-chapters").removeClass("js-active");
-		$(".manga--get-comments").addClass("js-active");
-	});
-	
+});
+
+$(".directory-manga").on("click", ".js-manga-info.js-hide", function(){
+	var pageID = $(this).attr("data-id");
+	$("#"+pageID+" .js-manga-info").addClass("js-show");
+	$("#"+pageID+" .js-manga-info.js-hide").removeClass("js-hide");
+	$("#"+pageID+" .js-directory-ajax-content").html("");
+	$("#"+pageID+" .js-manga-info.js-show .fa").replaceWith("<i class='fa fa-info-circle' aria-hidden='true'></i>");
+	$("#"+pageID+".directory-manga").toggleClass("js-visible");
+});
 
 
-/*------------------------------------------------------------------------------
- # Ajax for manga directory
-------------------------------------------------------------------------------*/
-	$(".directory--manga").on("click", ".js-manga-info.js-show", function(){
-		var pageID = $(this).attr("data-id");
-		$("#"+pageID+" .js-manga-info.js-show").removeClass("js-show");
-		$.ajax({
-			url: config.ajaxUrl,
-			type: "POST",
-			dataType: "json",
-			data: {
-				"action": "showInfo",
-				"pageID": pageID
-			},
-		}).done(function(data){
-			$("#"+pageID+" .js-manga-info").addClass("js-hide");
-			$("#"+pageID+" .js-directory--ajax-content").html(data);
-			$("#"+pageID+" .js-manga-info.js-hide .fa").replaceWith("<i class='fa fa-times-circle' aria-hidden='true'></i>");
-			$("#"+pageID+".directory--manga").toggleClass("js-visible");
-		})
-	})
-
-	$(".directory--manga").on("click", ".js-manga-info.js-hide", function(){
-		var pageID = $(this).attr("data-id");
-		$("#"+pageID+" .js-manga-info").addClass("js-show");
-		$("#"+pageID+" .js-manga-info.js-hide").removeClass("js-hide");
-		$("#"+pageID+" .js-directory--ajax-content").html("");
-		$("#"+pageID+" .js-manga-info.js-show .fa").replaceWith("<i class='fa fa-info-circle' aria-hidden='true'></i>");
-		$("#"+pageID+".directory--manga").toggleClass("js-visible");
-	})
-
-
-})
+});

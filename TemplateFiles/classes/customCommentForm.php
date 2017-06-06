@@ -31,21 +31,6 @@ class customCommentForm extends CommentForm {
 		$class = trim("CommentForm " . $attrs['class']); 
 		$note = '';
 
-		/*
-		 * Removed because this is not cache safe! Converted to JS cookie. 
-		 * 
-		if(is_array($this->session->CommentForm)) {
-			// submission data available in the session
-			$sessionValues = $this->session->CommentForm;
-			foreach($inputValues as $key => $value) {
-				if($key == 'text') continue; 
-				if(!isset($sessionValues[$key])) $sessionValues[$key] = '';
-				$inputValues[$key] = htmlentities($sessionValues[$key], ENT_QUOTES, $this->options['encoding']); 
-			}
-			unset($sessionValues);
-		}
-		*/
-
 		foreach($options['presets'] as $key => $value) {
 			if(!is_null($value)) $inputValues[$key] = $value; 
 		}
@@ -172,10 +157,7 @@ class customCommentForm extends CommentForm {
 			"\n<form class='$class CommentFormThread' action='$attrs[action]' method='$attrs[method]'>";
 
         if($this->wire("user")->isLoggedin()){
-            $form .= "\n\t<p class='CommentFormCite {$id}_cite'>" .
-                "\n\t\t<input type='hidden' name='cite' class='required uk-input' required='required' id='{$id}_cite' value='$inputValues[cite]' maxlength='128' />" .
-                "\n\t</p>" .
-                "\n\t<p class='CommentFormEmail {$id}_email'>" .
+            $form .= "\n\t<p class='CommentFormEmail {$id}_email'>" .
                 "\n\t\t<input type='hidden' name='email' class='required email uk-input' required='required' id='{$id}_email' value='$inputValues[email]' maxlength='255' />" .
                 "\n\t</p>";
         } else {
