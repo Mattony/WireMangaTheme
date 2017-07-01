@@ -60,7 +60,7 @@ class WireMangaTheme extends Process {
 	public function cacheChapters(HookEvent $event) {
 		$page = $event->arguments[0];
 		$cache = $this->wire("cache");
-		if( $page->template->name == "wm_manga_single" && $this->wire("session")->get('dontRefreshCache_' . $page->id) !== 1 ) :
+		if( $page->template->name == "wm_manga_single" && $this->wire("session")->get('dontRefreshCache:' . $page->id) != 1 ) :
 			$cache->delete("chapters:" . $page->id);
 			$cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page) {
 				return $this->chapterListMarkup($page);
@@ -74,8 +74,7 @@ class WireMangaTheme extends Process {
 		endif;
 	}
 
-	/** Send new chapter mail
-  	 *
+	/** 
 	 * Send an email to the subscribed users
 	 * when a new chapter is available
 	 *

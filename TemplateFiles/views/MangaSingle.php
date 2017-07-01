@@ -1,7 +1,4 @@
-<?php namespace ProcessWire; 
-
-
-?>
+<?php namespace ProcessWire; ?>
 
 <article class="manga uk-article">
 

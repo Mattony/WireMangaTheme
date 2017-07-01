@@ -127,24 +127,24 @@ class Account extends Wire {
 		$u = $this->wire("pages")->get("template=user, name={$user->name}");
 
 		if($this->wire("input")->post->hidden_profile_image) {
-			$this->uploadBase64Image($u, $base64String);
+			$this->uploadBase64Image();
 		} else {
 			$this->uploadWUImage($u, 'profile_image');
 		}
 
 		if(isset($email) && $email != $this->wire("sanitizer")->email($email)) {
-			$this->wire("session")->set("edit_message", "Email is not valid.");
+			$this->wire("session")->set("edit_error", "Email is not valid.");
 			return false;
 		}
 
 		if(isset($pass) && $pass != $_pass) {
-			$this->wire("session")->set("edit_message", "Passwords don't match.");
+			$this->wire("session")->set("edit_error", "Passwords don't match.");
 			return false;
 		}
 
 		if(isset($pass) && strlen($pass) && $this->isValidPassword($pass)) {
 			$error = $this->wire("session")->get("password_validation");
-			$this->wire("session")->set("edit_message", $error);
+			$this->wire("session")->set("edit_error", $error);
 			return false;
 		}
 
@@ -157,7 +157,7 @@ class Account extends Wire {
 		$u->wm_hide_adult = isset($hideAdult) ? 1 : 0;
 		$u->wm_adult_warning_off = isset($adultWarning) ? 1 : 0;
 		$u->save();
-		$this->wire("session")->set("edit_message", "Changes Saved");
+		$this->wire("session")->set("edit_succes", "Changes Saved");
 		return true;
 	}
 
@@ -221,7 +221,6 @@ class Account extends Wire {
 		$numErrors = 0;
 		$passRules = $this->wire("fields")->get("pass");
 		$requirements = $passRules->requirements;
-		$this->wire("session")->remove("password_validation");
 		
 		if(preg_match('/[\t\r\n]/', $value)) {
 			$this->wire("session")->set("password_validation", "Password contained invalid whitespace");
@@ -281,11 +280,15 @@ class Account extends Wire {
 	 * @param string $base64String Image in base64 format
 	 *
 	 */
-	protected function uploadBase64Image($user, $base64String) {
+	protected function uploadBase64Image() {
+		$user = $this->wire("user");
 		$base64String = explode(',', $this->wire("input")->post->hidden_profile_image);
+		$this->wire("log")->error($base64String);
 		$start = strpos($base64String[0], '/') + 1;
 		$end   = strpos($base64String[0], ';');
 		$extension = substr($base64String[0], $start, $end-$start);
+		$this->wire("log")->error($extension);
+		$this->wire("log")->error($base64String[1]);
 		$imagePath = $this->wire("config")->paths->assets."files/avatar.{$extension}";
 		file_put_contents($imagePath, base64_decode($base64String[1]));
 		$user->of(false);

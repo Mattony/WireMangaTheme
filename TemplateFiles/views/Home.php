@@ -1,5 +1,4 @@
 <?php namespace ProcessWire; ?>
-
 <!-- Latest Chapters -->
 <h3>Latest Chapters</h3>
 <section class="chapters-latest">
@@ -14,7 +13,7 @@
 	    <article id="p-<?= $chapter->id ?>" class="chapter uk-card uk-card-small uk-card-default">
 			<div class="uk-card-body">
 				<a href="<?= $chapter->url ?>">
-					<img src="<?= $chapter->wm_chapter_images->first()->size(240,300)->url ?>" class="">
+					<img src="<?= $chapter->parent->wm_cover->first()->size(240,300)->url ?>" class="">
 				</a>
 			</div>
 			<div class=" uk-card-footer">
@@ -69,7 +68,7 @@
 		<div class="manga uk-card uk-card-small uk-card-default">
 			<div class="uk-card-header">
 				<h4 class="uk-card-title">
-					<?= $editLink ?> <a href="{$p->url}"><?=$p->title?></a>
+					<?= $editLink ?> <a href="<?= $p->url?>"><?=$p->title?></a>
 				</h4>
 			</div>
 			<div class="uk-card-body">

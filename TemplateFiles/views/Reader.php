@@ -2,9 +2,11 @@
 <?php
 $prev_page = null;
 $next_page = null;
+$pagesList = null;
 if(!$show_all_ch_images) {
 	$prev_page = "<a href='{$reader->prevPage()}' title='Previous Page'><i class='fa fa-chevron-left' aria-hidden='true'></i></a>";
 	$next_page = "<a href='{$reader->nextPage()}' title='Next Page'><i class='fa fa-chevron-right' aria-hidden='true'></i></a>";
+	$pagesList = $reader->pagesList();
 }
 
 $options = ["One image per page", "All chapter images on one page"];
@@ -21,24 +23,24 @@ $options = ["One image per page", "All chapter images on one page"];
 				<?= $next_page ?>
 			</div>
 
-			<div class="reader-nav reader-nav-right uk-flex">
+			<div id="reader-nav" class="reader-nav reader-nav-right uk-flex">
 				<div class="reader-chapters uk-margin-left">
 					<?= $reader->chaptersList() ?>
 				</div>
 				<div class="reader-pages uk-margin-left">
-					<?= $reader->pagesList() ?>
+					<?= $pagesList ?>
 				</div>
 			</div>
 		</div>
 		<div class="reader-image uk-text-center">
 			<?php
 			if($show_all_ch_images) {
-				foreach($page->wm_chapter_images as $img) {
-					echo "<div class='uk-margin-bottom'><img src='{$img->url}'></div>";
+				foreach($page->wm_chapter_images->sort("name") as $img) {
+					echo "<div class='img-wrapper uk-margin-bottom'><img data-src='{$img->url}' class='lazyload'></div>";
 				}
 			}
 			else {
-				echo "<a href='{$reader->nextPage()}' class='reader-image-link'><img src='{$reader->imageSrc()}'></a>";
+				echo "<a href='{$reader->nextPage()}#reader-nav' class='reader-image-link'><img src='{$reader->imageSrc()}'></a>";
 			}
 			?>
 		</div>

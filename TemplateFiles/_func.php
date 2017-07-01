@@ -162,7 +162,7 @@ function menuBuilder() {
 			$menuWrapperClose =  ($depth == -1) ? "</ul>" : "</ul></div>";
 			$menu .= str_repeat($menuWrapperClose, $depth - $item->depth);
 		}
-		$href = " href='{$rootUrl}{$item->wm_menu_URL}'";
+		$href = ($item->wm_menu_URL != "-") ? " href='{$item->wm_menu_URL}'" : "";
 		$title = strip_tags(wire("sanitizer")->unentities($item->title), "<i>");
 		$itemClasses = trim(preg_replace('!\s+!', ' ', "menu-item {$item->wm_menu_class} {$hasChild}"));
 		$menu .= "<li class='{$itemClasses}'><a{$href} class='menu-link'>{$title}</a>{$hasChildIcon}";
@@ -198,10 +198,10 @@ function adultNotice($page, $parent) {
 	// show the adult content notice
 	// if not disabled and the adult content session variable was not set
 	if($parent->wm_adult && !$session->get("adult") && !$user->wm_adult_warning_off) {
+		$message = wire("settings")->wm_adult_warn_mess ? wire("settings")->wm_adult_warn_mess : "This manga contains adult content.<br>Proceed?";
 		$out = "<div class='uk-flex'>";
 			$out .= "<div class='uk-width-xxlarge uk-margin-auto uk-text-center uk-text-lead'>";
-			$out .= "This manga contains adult content.<br>";
-			$out .= "Clicking the below button will remove this warning and remember your choice for the duration of your session. ";
+			$out .= $message;
 			$out .= "<form method='post'>";
 			$out .= "<input type='submit' name='show_adult' value='OK' class='uk-input uk-margin-top uk-button uk-button-danger'>";
 			$out .= "</form>";
@@ -228,7 +228,7 @@ function viewCounter() {
 
 		// increment views and save page
 		$page->of(false);
-		$page->wm_views = $page->wm_views + 1;
+		$page->wm_views = $page->wm_views ? $page->wm_views + 1 : 1;
 		$page->save("wm_views");
 
 		// clear session variable so cache can be cleared
@@ -286,9 +286,11 @@ function readerSettings() {
 	// redirect to a page displaying single image 
 	// or all chapter images on the same page
 	if(!$input->urlSegment1 && $settings["show_all_ch_images"] == 0) {
+		wire("log")->error("redirect show_all_ch_images = 0");
 		$session->redirect($page->url . "1/");
 	}
 	elseif($input->urlSegment1 && $settings["show_all_ch_images"] == 1) {
+		wire("log")->error("redirect show_all_ch_images = 1");
 		$session->redirect($page->url);
 	}
 	return $settings;

@@ -5,7 +5,7 @@
 		// and build the letter navigation
 		$letternav = "";
 		foreach($aToZ as $letter) {
-			$letternav .= "<a href='{$page->url}?q={$letter}' class='uk-label uk-margin-small-right'>{$letter}</a>";
+			$letternav .= "<a href='{$page->url}{$letter}' class='uk-label uk-margin-small-right'>{$letter}</a>";
 		}
 	?>
 	<div class="directory-letters uk-margin-small-bottom"><?= $letternav ?></div>

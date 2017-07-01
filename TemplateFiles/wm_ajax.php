@@ -15,7 +15,7 @@ if($input->post->action === 'ajaxSearch') {
 	foreach($results as $r) {
 		$out .= "<li class='header-search-item'><a href='{$r->url}'>{$r->title}</a></li>";
 	}
-	return json_encode(["success" => true, "message" => "", "html" => $out]);
+	echo json_encode(["success" => true, "message" => "", "html" => $out]);
 }
 
 
@@ -32,7 +32,7 @@ if($input->post->action === 'showComments') {
 		"success" => true,
 		"html" => $commentsHtml
 	];
-	return json_encode($result);
+	echo json_encode($result);
 }
 
 /**
@@ -42,13 +42,13 @@ if($input->post->action === 'showChapters') {
 	$id = (int) $input->post->pageID;
 	$p = $pages->get("template=wm_manga_single, id={$id}");
 	$chapters = $cache->get("chapters:" . $p->id, $cache::expireNever, function() use($p, $wmt){
-		return $wmt->chapterListMarkup($p);
+		echo $wmt->chapterListMarkup($p);
 	});
 	$result = [
 		"success" => true,
 		"html" => $chapters
 	];
-	return json_encode($result);
+	echo json_encode($result);
 }
 
 /**
@@ -71,7 +71,7 @@ if($input->post->action === "showInfo") {
 	$out .= "<div class='directory-manga-description'>{$desc}</div>";
 	$out .= "<div class='directory-manga-genre'>{$genre}</div>";
 	$out .= "</div>";
-	return json_encode($out);
+	echo json_encode($out);
 }
 
 
@@ -83,7 +83,7 @@ if($input->post->action === "subscribe") {
 	if($user->isLoggedin()) {
 		$out = subscribeUserToManga($pages->get($id), $user);
 	}
-	return json_encode($out);
+	echo json_encode($out);
 }
 
 if($input->post->action === "unsubscribe") {
@@ -91,5 +91,5 @@ if($input->post->action === "unsubscribe") {
 	if($user->isLoggedin()) {
 		$out = unsubscribeUserFromManga($pages->get($id), $user);
 	}
-	return json_encode($out);
+	echo json_encode($out);
 }

@@ -3,7 +3,7 @@
 include(__DIR__ . "/_func.php");
 include(__DIR__ . "/classes/account.php");
 $account = new Account();
-
+$test = "test";
 // added to selectors to hide adult manga
 $hideAdultChapters = $user->wm_hide_adult ? "parent.wm_adult!=1" : "";
 $hideAdultManga = $user->wm_hide_adult ? "wm_adult!=1" : "";
@@ -71,15 +71,14 @@ $footer = "<div class='footer--inner'></div>";
 $paginationOptions = [
 	"nextItemLabel"     => "Next",
 	"previousItemLabel" => "Prev",
-	"listMarkup"        => "<nav class='pagination'>{out}</nav>",
+	"listMarkup"        => "<nav class='uk-pagination'>{out}</nav>",
 	"itemMarkup"        => "<div class='{class}'>{out}</div>",
 	"linkMarkup"        => "<a href='{url}' class=''>{out}</a>",
-	"currentItemClass"  => "current",
+	"currentItemClass"  => "uk-active",
 	"numPageLinks"      => 6,
 	"separatorItemClass" => "sep"
 ];
 
-
-if( file_exists(__DIR__ . "/user-settings.php")) {
-	include_once(__DIR__ . "/user-settings.php");
+if( file_exists(__DIR__ . "/_user-settings.php")) {
+	include_once(__DIR__ . "/_user-settings.php");
 }

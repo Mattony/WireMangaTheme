@@ -13,15 +13,20 @@ $profileImage = $user->wm_profile_image->first() ? "<img src='{$user->wm_profile
 	<?php
 	if($input->post->submit) {
 		$edit = $account->editProfile();
-		if($edit) {
-			echo "<div class='message error'>{$session->get("edit_message")}</div>";
-		} else {
-			echo "<div class='message success'>{$session->get("edit_message")}</div>";
-		}
-		$session->remove("edit_message");
+		$session->redirect($page->url . "edit-profile");
 	}
-	echo "<div class='message success'>{$session->get("email_changed")}</div>";
+	if($session->get("edit_succes")) {
+		echo "<div class='message success'>{$session->get("edit_succes")}</div>";
+		$session->remove("edit_succes");
+	}
+	if($session->get("edit_error")) {
+		echo "<div class='message error'>{$session->get("edit_error")}</div>";
+		$session->remove("edit_error");
+	}
+	if($session->get("email_changed")) {
+		echo "<div class='message success'>{$session->get("email_changed")}</div>";
 		$session->remove("email_changed");
+	}
 	?>
 	<h1><?= $user->name ?></h1>
 	<div class="edit-profile-main">

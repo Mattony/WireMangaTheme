@@ -52,6 +52,7 @@ class WireMangaThemeSetup extends Wire {
 	public function setArrays() {
 
 		$this->pages_ = [
+			["title" => "Manga Directory","name" => "settings", "template" => "wm_manga"   , "path" => "/"],
 			["title" => "User"          , "name" => "user"    , "template" => "wm_account" , "path" => "/"],
 			["title" => "Theme Settings", "name" => "settings", "template" => "wm_settings", "path" => "/"],
 			["title" => "Ajax"          , "name" => "ajax"    , "template" => "wm_ajax"    , "path" => "/"],
@@ -60,7 +61,7 @@ class WireMangaThemeSetup extends Wire {
 		$this->fields_ = [
 		["name" => "wm_site_url"         , "type" => "Text"    , "add_to" => null  , "label" => "External Url"],
 		["name" => "wm_menu_class"       , "type" => "Text"    , "add_to" => null  , "label" => "Class", "notes" => "Add class to the <li> tag containing the menu item."],
-		["name" => "wm_menu_URL"         , "type" => "Text"    , "add_to" => null  , "label" => "URL", "notes" => "**Internal links:** relative paths to the root url\n**External links:** url with or without http/s, must start with //\n**No href:** - (hyphen) removes the href tag completely\nLeave  blank for home page"],
+		["name" => "wm_menu_URL"         , "type" => "Text"    , "add_to" => null  , "label" => "URL", "notes" => "Full url (http://google.com)\nRemove the href attribute with a - (hyphen)"],
 		["name" => "wm_menu_show_to"     , "type" => "Options" , "add_to" => null  , "label" => "Show To", "default" => 1, "setOptionsString" => "All Users\nLogged In Users\nLogged Out Users"],
 		["name" => "wm_menu_admin"       , "type" => "Checkbox", "add_to" => null  , "label" => "Admin Only", "notes" => "Visible only by admin."],
 		["name" => "wm_adult"            , "type" => "Checkbox", "add_to" => "wm_manga_single", "label" => "Adult", "notes" => "If checked there will be a warning before showing the manga page."],
@@ -69,10 +70,11 @@ class WireMangaThemeSetup extends Wire {
 		["name" => "wm_seo_description"  , "type" => "Textarea", "add_to" => "wm_manga_single", "label" => "Seo Description", "notes" => "[SEO description](https://moz.com/learn/seo/meta-description)"],
 		["name" => "wm_views"            , "type" => "Integer" , "add_to" => "wm_manga_single", "label" => "Views"],
 		["name" => "wm_manga_subs"       , "type" => "Page"    , "add_to" => "wm_manga_single", "label" => "Subscribers", "parent" => "users" , "template" => "user", "addable" => 0, "inputfield" => "InputfieldAsmSelect"],
-		["name" => "wm_logo"             , "type" => "Image"   , "add_to" => "wm_settings", "label" => "Site Logo", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
 		["name" => "wm_user_activate"    , "type" => "Checkbox", "add_to" => "wm_settings", "label" => "Require Account Activation", "notes" => "If checked users will need to activate their account (through email) before being able to use it."],
+		["name" => "wm_logo"             , "type" => "Image"   , "add_to" => "wm_settings", "label" => "Site Logo", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
 		["name" => "wm_site_name"        , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Site Name", "notes" => "Used in the title tag and emails."],
 		["name" => "wm_site_title_sep"   , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Site Title Separator", "notes" => "Used in the title tag."],
+		["name" => "wm_adult_warn_mess"  , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Adult Warning Text", "notes" => "Displayed before accessing a manga marked as adult."],
 		["name" => "wm_site_email"       , "type" => "Email"   , "add_to" => "wm_settings", "label" => "Site Email", "notes" => "Emails will be sent from this address."],
 		["name" => "wm_no_chapters"      , "type" => "Text"    , "add_to" => "wm_settings", "label" => "No Chapters Available Text", "notes" => "Text displayed when the manga has no chapters."],
 		["name" => "wm_limit_width"      , "type" => "Checkbox", "add_to" => "wm_settings", "label" => "Limit Page Width", "notes" => "When checked the page will have a max width of 1200px."],
@@ -137,6 +139,7 @@ class WireMangaThemeSetup extends Wire {
 				if(isset($tpl["urlSegments"])) {
 					$t->urlSegments = $tpl["urlSegments"];
 				}
+				$t->altFilename = "controller";
 				$t->save();
 				$tpl_id = $tpl["name"] . "_id";
 				$$tpl_id = $t->id;

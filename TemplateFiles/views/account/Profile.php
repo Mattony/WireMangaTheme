@@ -27,7 +27,7 @@
 			</div>
 			<div class='uk-flex'>
 				<div class='profile-info-left'><strong>Joined</strong></div>
-				<div class='profile-info-right'><?= $user->wm_registration_date ?></div>
+				<div class='profile-info-right'><?= $users->get($user->id)->wm_registration_date ?></div>
 			</div>
 		</div>
 	</div>

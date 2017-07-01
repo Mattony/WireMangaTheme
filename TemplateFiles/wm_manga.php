@@ -1,16 +1,18 @@
 <?php namespace ProcessWire;
-
+if($page->name == "manga") {
+	$session->redirect("{$config->urls->httpRoot}manga-directory/");
+}
 $bodyClass .= " manga-directory";
 
 // all alphabet letter to check the query variable
 // and build the letter navigation
 $aToZ = ["#", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
-$q = strtolower($input->get->q);
+$q = strtolower($input->urlSegments1);
 // if query variable is set and in the $aToZ array
 // get manga starting with that query variable
 $q = $sanitizer->selectorValue($q);
 if($q && array_search($q, $aToZ) !== false) {
-	$results = $pages->find("template=wm_manga_single, name^={$q}, sort=title, limit=100, $hideAdultManga");
+	$results = $pages->find("template=wm_manga_single, title^={$q}, sort=title, limit=2, $hideAdultManga");
 	$noResults = ($results->count) ? "" : "<div class='directory--no-results'>No results!</div>";
 } else if($q && $q == "#") {
 	$numbers = "0|1|2|3|4|5|6|7|8|9";
