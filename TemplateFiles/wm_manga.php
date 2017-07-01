@@ -21,6 +21,17 @@ if($q && array_search($q, $aToZ) !== false) {
 	$noResults = ($results->count) ? "" : "<div class='directory--no-results'>No results!</div>";
 }
 
+$paginationOptions = [
+	"nextItemLabel"     => "Next",
+	"previousItemLabel" => "Prev",
+	"listMarkup"        => "<nav class='uk-pagination'>{out}</nav>",
+	"itemMarkup"        => "<div class='{class}'>{out}</div>",
+	"linkMarkup"        => "<a href='{url}' class=''>{out}</a>",
+	"currentItemClass"  => "uk-active",
+	"numPageLinks"      => 6,
+	"separatorItemClass" => "sep"
+];
+
 $vars = array(
 	'aToZ' => $aToZ,
 	'results' => $results,
