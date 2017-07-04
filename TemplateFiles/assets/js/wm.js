@@ -157,7 +157,6 @@ $(".manga-get-comments").on("click", function(){
 $(".directory-manga").on("click", ".js-manga-info.js-show", function(){
 	var pageID = $(this).attr("data-id");
 	$("#"+pageID+" .js-manga-info.js-show").removeClass("js-show");
-	console.log(config.ajaxUrl);
 	$.ajax({
 		url: config.ajaxUrl,
 		type: "POST",
@@ -167,7 +166,6 @@ $(".directory-manga").on("click", ".js-manga-info.js-show", function(){
 			"pageID": pageID
 		},
 	}).done(function(data){
-		console.log(data);
 		$("#"+pageID+" .js-manga-info").addClass("js-hide");
 		$("#"+pageID+" .js-directory-ajax-content").html(data);
 		$("#"+pageID+" .js-manga-info.js-hide .fa").replaceWith("<i class='fa fa-times-circle' aria-hidden='true'></i>");

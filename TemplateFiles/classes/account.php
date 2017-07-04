@@ -46,7 +46,9 @@ class Account extends Wire {
 			}
 
 			$this->createUser($username, $email, $pass);
-			$this->sendActivationMail($email, $username, $u->activation_code);
+			if($this->wire("settings")->wm_user_activate) {
+				$this->sendActivationMail($email, $username);
+			}
 			return true;
 		}
 		$this->wire("session")->set("registration_message", "<div class='message error'>All fields are required.</div>");
@@ -58,8 +60,8 @@ class Account extends Wire {
 		$u->name = $username;
 		$u->email = $email;
 		$u->pass = $pass;
-		$u->activation_code = $this->wire("settings")->wm_user_activate ? $this->generateHash(100) : "0";
-		$u->registrationDate = time();
+		$u->wm_activation_code = $this->wire("settings")->wm_user_activate ? $this->generateHash(100) : "0";
+		$u->wm_registration_date = time();
 		$u->addRole("member");
 		return $u->save();
 	}
@@ -69,9 +71,10 @@ class Account extends Wire {
 		return $rand->randomBase64String($length);
 	}
 
-	public function sendActivationMail($to, $username, $hash) {
+	public function sendActivationMail($to, $username) {
+		$u = $this->wire("users")->get($username);
 		// Send activation code
-		$activationLink = $this->wire("config")->urls->httpRoot."user/activate/?user=".$username."&hash=".$hash;
+		$activationLink = $this->wire("config")->urls->httpRoot."user/activate/?user=".$username."&hash=".$u->wm_activation_code;
 		$site = $this->wire("config")->urls->httpRoot;
 		$siteName = $this->wire("settings")->wm_site_name;
 
@@ -98,11 +101,11 @@ class Account extends Wire {
 	 * @return bool
 	 */
 	public function activateUserAccount($username, $hash) {
-		$username = $sanitizer->pageName($username);
+		$username = $this->wire("sanitizer")->pageName($username);
 		$u = $this->wire("users")->get($username);
-		if($u->id && strcmp($u->activation_code, $hash) === 0) {
+		if($u->id && strcmp($u->wm_activation_code, $hash) === 0) {
 			$u->of(false);
-			$u->activation_code = 0;
+			$u->wm_activation_code = 0;
 			return $u->save();
 		} else {
 			return false;
@@ -148,11 +151,11 @@ class Account extends Wire {
 			return false;
 		}
 
-		$u->of(false);
-		if(isset($u, $email)) {
+		if(isset($u, $email) && $email !== $u->email) {
 			$this->saveTmpEmail($user, $email);
 			$this->sendEmailChangeConfirmation($user, $email);
 		}
+		$u->of(false);
 		$u->pass = $pass;
 		$u->wm_hide_adult = isset($hideAdult) ? 1 : 0;
 		$u->wm_adult_warning_off = isset($adultWarning) ? 1 : 0;
@@ -169,7 +172,7 @@ class Account extends Wire {
 	}
 
 	protected function sendEmailChangeConfirmation($user, $email) {
-		$confirmLink = "{$this->wire("config")->urls->httpRoot}?action=confirmemail&user={$user->name}&hash={$user->wm_email_conf_code}";
+		$confirmLink = "{$this->wire("config")->urls->httpRoot}user/confirm/?action=confirmemail&user={$user->name}&hash={$user->wm_email_conf_code}";
 		$emailMessage  = "Hi {$user->name}!<br>Please confirm the email address change by clicking the bellow link.";
 		$emailMessage .= "<a href='{$confirmLink}'>{$confirmLink}</a><br>";
 		$emailMessage .= "If you didn't initiate the change please ignore this email.";
@@ -185,11 +188,12 @@ class Account extends Wire {
 		$username = $this->wire("sanitizer")->pageName($this->wire("input")->get->user);
 		$hash = $this->wire("input")->get->hash;
 		$user = $this->wire("users")->get($username);
-		
-		if($user->wm_email_conf_code == 0) {
+		if(!$user->id) {
 			return false;
 		}
-
+		if($user->wm_email_conf_code === "0") {
+			return false;
+		}
 		if($user->id && strcmp($user->wm_email_conf_code, $hash) === 0) {
 			$user->of(false);
 			$user->email = $user->wm_tmp_email;
@@ -221,7 +225,7 @@ class Account extends Wire {
 		$numErrors = 0;
 		$passRules = $this->wire("fields")->get("pass");
 		$requirements = $passRules->requirements;
-		
+		$this->wire("session")->remove("password_validation");
 		if(preg_match('/[\t\r\n]/', $value)) {
 			$this->wire("session")->set("password_validation", "Password contained invalid whitespace");
 			return false;

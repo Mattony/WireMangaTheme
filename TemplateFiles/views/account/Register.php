@@ -14,7 +14,11 @@ $passReq = str_replace("other", "special character", implode(", ", $passRules->r
 		if(!$register) {
 			echo $session->get("registration_message");
 		} else {
-			$session->set("registration_message", "<div class='contact-succes'>Your account has been created!</div>");
+			$activate_message = null;
+			if($settings->wm_user_activate) {
+				$activate_message = " Check your email for the activation link. You can login to resend the email or delete the account.";
+			}
+			$session->set("registration_message", "<div class='message success'>Your account has been created!{$activate_message}</div>");
 			$session->redirect($config->urls->httpRoot . "user/login/");
 		}
 	}

@@ -5,6 +5,8 @@
 	if($user->wm_activation_code && !$user->isSuperuser()) {
 		$session->redirect($config->urls->httpRoot . "user/activate/");
 	}
+	// enable output formatting (needed to format date and other fields related to $user)
+	$user->of(true);
 ?>
 
 <section class='profile uk-background-default uk-padding'>
@@ -27,7 +29,7 @@
 			</div>
 			<div class='uk-flex'>
 				<div class='profile-info-left'><strong>Joined</strong></div>
-				<div class='profile-info-right'><?= $users->get($user->id)->wm_registration_date ?></div>
+				<div class='profile-info-right'><?=  $user->wm_registration_date ?></div>
 			</div>
 		</div>
 	</div>

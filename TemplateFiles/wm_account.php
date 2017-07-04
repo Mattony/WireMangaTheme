@@ -1,5 +1,5 @@
 <?php namespace ProcessWire;
-if(!$input->urlSegment1) {
+if($page->name == "user" && !$input->urlSegment1) {
 	$session->redirect($page->url."profile");
 }
 
@@ -59,6 +59,17 @@ elseif($input->urlSegment1 === "edit-profile") {
 	$content = $files->render(__DIR__ . "/views/account/EditProfile.php", ["account" => $account]);
 }
 
+/* Account activation page */
+elseif($input->urlSegment1 === "activate") {
+	$bodyClass .= " activate";
+	$content = $files->render(__DIR__ . "/views/account/Activate.php", ["account" => $account]);
+}
+
+/* Email confirmation page */
+elseif($input->urlSegment1 === "confirm") {
+	$content = $files->render(__DIR__ . "/views/account/Confirm.php", ["account" => $account]);
+}
+
 /* Password reset page */
 elseif($input->urlSegment1 === "password-reset") {
 	$bodyClass .= " password-reset";
@@ -69,17 +80,6 @@ elseif($input->urlSegment1 === "password-reset") {
 	$footerAssets .= "<script type='text/javascript' src='{$url}wire/modules/Jquery/JqueryCore/xregexp.js'></script>";
 	$footerAssets .= "<script type='text/javascript' src='{$url}wire/modules/Inputfield/InputfieldPassword/InputfieldPassword.js'></script>";
 	$content = $files->render(__DIR__ . "/views/account/PasswordReset.php", ["account" => $account]);
-}
-
-/* Account activation page */
-elseif($input->urlSegment1 === "activate") {
-	$bodyClass .= " activate";
-	$content = $files->render(__DIR__ . "/views/account/Activate.php", ["account" => $account]);
-}
-
-/* Email confirmation page */
-elseif($input->urlSegment1 === "confirm") {
-	$content = $files->render(__DIR__ . "/views/account/Confirm.php", ["account" => $account]);
 }
 
 

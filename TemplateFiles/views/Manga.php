@@ -3,7 +3,7 @@
 	<?php
 		// Loop over the $aToZ array
 		// and build the letter navigation
-		$letternav = "";
+		$letternav = null;
 		foreach($aToZ as $letter) {
 			$letternav .= "<a href='{$page->url}{$letter}' class='uk-label uk-margin-small-right'>{$letter}</a>";
 		}

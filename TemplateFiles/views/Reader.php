@@ -1,21 +1,8 @@
 <?php namespace ProcessWire; ?>
-<?php
-$prev_page = null;
-$next_page = null;
-$pagesList = null;
-if(!$show_all_ch_images) {
-	$prev_page = "<a href='{$reader->prevPage()}' title='Previous Page'><i class='fa fa-chevron-left' aria-hidden='true'></i></a>";
-	$next_page = "<a href='{$reader->nextPage()}' title='Next Page'><i class='fa fa-chevron-right' aria-hidden='true'></i></a>";
-	$pagesList = $reader->pagesList();
-}
-
-$options = ["One image per page", "All chapter images on one page"];
-
-?>
 
 <div class="reader uk-text-center">
 	<div class="uk-display-inline-block" style="max-width: <?= $width ?>px">
-		<div class="reader-header">
+		<div id="reader-header" class="reader-header">
 			<div class="reader-nav reader-nav-left">
 				<a href="#reader-settings" uk-toggle><i class="fa fa-wrench uk-margin-right" aria-hidden="true"></i></a>
 				<?= $prev_page ?>
@@ -23,7 +10,7 @@ $options = ["One image per page", "All chapter images on one page"];
 				<?= $next_page ?>
 			</div>
 
-			<div id="reader-nav" class="reader-nav reader-nav-right uk-flex">
+			<div class="reader-nav reader-nav-right uk-flex">
 				<div class="reader-chapters uk-margin-left">
 					<?= $reader->chaptersList() ?>
 				</div>
@@ -40,7 +27,7 @@ $options = ["One image per page", "All chapter images on one page"];
 				}
 			}
 			else {
-				echo "<a href='{$reader->nextPage()}#reader-nav' class='reader-image-link'><img src='{$reader->imageSrc()}'></a>";
+				echo "<a href='{$reader->nextPage()}#reader-header' class='reader-image-link'><img src='{$reader->imageSrc()}'></a>";
 			}
 			?>
 		</div>

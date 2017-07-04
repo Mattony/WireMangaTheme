@@ -286,11 +286,9 @@ function readerSettings() {
 	// redirect to a page displaying single image 
 	// or all chapter images on the same page
 	if(!$input->urlSegment1 && $settings["show_all_ch_images"] == 0) {
-		wire("log")->error("redirect show_all_ch_images = 0");
 		$session->redirect($page->url . "1/");
 	}
 	elseif($input->urlSegment1 && $settings["show_all_ch_images"] == 1) {
-		wire("log")->error("redirect show_all_ch_images = 1");
 		$session->redirect($page->url);
 	}
 	return $settings;

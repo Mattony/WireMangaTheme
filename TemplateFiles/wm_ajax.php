@@ -42,7 +42,7 @@ if($input->post->action === 'showChapters') {
 	$id = (int) $input->post->pageID;
 	$p = $pages->get("template=wm_manga_single, id={$id}");
 	$chapters = $cache->get("chapters:" . $p->id, $cache::expireNever, function() use($p, $wmt){
-		echo $wmt->chapterListMarkup($p);
+		return $wmt->chapterListMarkup($p);
 	});
 	$result = [
 		"success" => true,

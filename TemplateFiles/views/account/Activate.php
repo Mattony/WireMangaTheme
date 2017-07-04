@@ -1,5 +1,5 @@
 <?php namespace ProcessWire;
-if($user->wm_activation_code == 0) {
+if($user->wm_activation_code === "0") {
 	$session->redirect($config->urls->httpRoot . "user/profile/");
 }
 
@@ -9,21 +9,24 @@ $form = "";
 // get variables are set
 if(isset($input->get->user) && isset($input->get->hash)) {
 	if(!$account->activateUserAccount($input->get->user, $input->get->hash)) {
-		echo "<div class='message error'>Something went wrong!</div>";
+		$session->set("registration_message", "<div class='message error'>Something went wrong!</div>");
+		$session->redirect($config->urls->httpRoot . "user/login/");
 	}
-	echo "<div class='message success'>Your account was activated!</div>";
+	$session->set("registration_message", "<div class='message success'>Your account was activated!</div>");
+	$session->redirect($config->urls->httpRoot . "user/login/");
 } else { // get variables are not set
 	if($user->isLoggedin()) {
 		if($input->post->submit_resend){
 			$account->sendActivationMail($user->email, $user->name, $user->activation_code);
 		}
-		if($input->post->submit_delete){
+		if($input->post->submit_delete) {
 			$u = $users->get($user->name);
 			$session->logout();
 			$users->delete($u);
 		}
 		// show resend email form with optional email change
-		echo "<section class='uk-width-large uk-margin-auto'>";
+		echo "<section class='uk-width-xxlarge uk-text-center uk-margin-auto'>";
+		echo "<div class='uk-margin'>Your account is not active. <br>Check your email for the activation email or resend it using the button below.<br><br> Your email is {$user->email}</div>";
 		echo "<form method='post'>";
 		echo "<input type='submit' name='submit_resend' value='Resend activation email' class='uk-button uk-button-primary'> ";
 		echo "<input type='submit' name='submit_delete' value='Delete account' class='uk-button uk-button-danger'>";

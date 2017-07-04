@@ -52,7 +52,7 @@ class WireMangaThemeSetup extends Wire {
 	public function setArrays() {
 
 		$this->pages_ = [
-			["title" => "Manga Directory","name" => "settings", "template" => "wm_manga"   , "path" => "/"],
+			["title" => "Manga Directory","name" => "manga-directory", "template" => "wm_manga", "path" => "/"],
 			["title" => "User"          , "name" => "user"    , "template" => "wm_account" , "path" => "/"],
 			["title" => "Theme Settings", "name" => "settings", "template" => "wm_settings", "path" => "/"],
 			["title" => "Ajax"          , "name" => "ajax"    , "template" => "wm_ajax"    , "path" => "/"],

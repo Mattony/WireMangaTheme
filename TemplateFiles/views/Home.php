@@ -2,18 +2,19 @@
 <!-- Latest Chapters -->
 <h3>Latest Chapters</h3>
 <section class="chapters-latest">
-	<?php foreach($chapters as $chapter):
+	<?php
+	foreach($chapters as $chapter):
 	    $editLink = "";
 	    if($user->isSuperUser()) {
 			$editLink  = "<a href='{$config->urls->admin}page/edit/?id={$chapter->id}' target='_blank' class='edit-link' title='Edit chapter {$chapter->title}'>";
 			$editLink .= "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>";
 			$editLink .= "</a>";
-	    }
+		}
 	?>
 	    <article id="p-<?= $chapter->id ?>" class="chapter uk-card uk-card-small uk-card-default">
 			<div class="uk-card-body">
 				<a href="<?= $chapter->url ?>">
-					<img src="<?= $chapter->parent->wm_cover->first()->size(240,300)->url ?>" class="">
+					<img src="<?= $chapter->parent->wm_cover->first()->size(240,300)->url ?>">
 				</a>
 			</div>
 			<div class=" uk-card-footer">
@@ -42,11 +43,11 @@
 		<div class="manga uk-card uk-card-small uk-card-default">
 			<div class="uk-card-header">
 				<h4 class="uk-card-title">
-					<?= $editLink ?> <a href="<?=$l->url?>"><?=$l->title?></a>
+					<?= $editLink ?> <a href="<?= $l->url ?>"><?= $l->title ?></a>
 				</h4>
 			</div>
 			<div class="uk-card-body">
-				<a href="<?=$l->url?>"><img src="<?=$l->wm_cover->first()->size(200,0)->url?>"></a>
+				<a href="<?= $l->url ?>"><img src="<?= $l->wm_cover->first()->size(200,0)->url ?>"></a>
 			</div>
 		</div>
 	<?php endforeach; ?>
@@ -68,11 +69,11 @@
 		<div class="manga uk-card uk-card-small uk-card-default">
 			<div class="uk-card-header">
 				<h4 class="uk-card-title">
-					<?= $editLink ?> <a href="<?= $p->url?>"><?=$p->title?></a>
+					<?= $editLink ?> <a href="<?= $p->url?>"><?= $p->title ?></a>
 				</h4>
 			</div>
 			<div class="uk-card-body">
-				<a href="<?=$p->url?>"><img src="<?=$p->wm_cover->first()->size(200,0)->url?>"></a>
+				<a href="<?= $p->url ?>"><img src="<?= $p->wm_cover->first()->size(200,0)->url ?>"></a>
 			</div>
 		</div>
 	<?php endforeach; ?>
