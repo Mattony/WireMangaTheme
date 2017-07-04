@@ -71,7 +71,8 @@
 }
 
 .submenu-toggle:hover {
-	background-color: #c5c5c5;
+	text-shadow: 0px 0px 3px #2c94ff;
+	color: #498fb9;
 }
 
 .submenu-wrap {

@@ -4,6 +4,8 @@ if($input->get("action") === "confirmemail") {
 		echo "<div class='message error'>Something went wrong.</div>";
 	} else {
         $session->set("email_changed", "Your email address was changed.");
-		$session->redirect($config->urls->httpRoot . "user/edit-profile/");
+		$session->redirect($page->httpUrl . "edit-profile/");
 	}
+} else {
+	$session->redirect($page->httpUrl . "profile/");
 }

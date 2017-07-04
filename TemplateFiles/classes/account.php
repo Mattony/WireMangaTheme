@@ -72,8 +72,8 @@ class Account extends Wire {
 	}
 
 	public function sendActivationMail($to, $username) {
-		$u = $this->wire("users")->get($username);
 		// Send activation code
+		$u = $this->wire("users")->get($username);
 		$activationLink = $this->wire("config")->urls->httpRoot."user/activate/?user=".$username."&hash=".$u->wm_activation_code;
 		$site = $this->wire("config")->urls->httpRoot;
 		$siteName = $this->wire("settings")->wm_site_name;
@@ -87,7 +87,7 @@ class Account extends Wire {
 		$mail = wireMail();
 		$mail->to($to);
 		$mail->from($this->wire("settings")->wm_site_email);
-		$mail->subject("Email verification @ {$this->wire("config")->wmSiteName}");
+		$mail->subject("{$siteName} - activate your account!");
 		$mail->bodyHTML($emailMessage);
 		return $mail->send();
 	}

@@ -143,6 +143,9 @@ function menuBuilder() {
 	$selector .= (wire("user")->isSuperuser()) ? ", wm_menu_admin=0|1" : ", wm_menu_admin=0";
 
 	$items = wire("settings")->wm_menu->find($selector);
+	if(!count($items)) {
+		return;
+	}
 	$depth = -1;
 	foreach($items as $k => $item) {
 		$hasChild     = null;

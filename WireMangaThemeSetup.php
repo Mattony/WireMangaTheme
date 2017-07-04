@@ -16,10 +16,6 @@ class WireMangaThemeSetup extends Wire {
 		$this->createPages();
 		$this->createFields();
 		$this->copyFiles($this->config->paths->siteModules . "WireMangaTheme/TemplateFiles/", $this->config->paths->templates);
-		$initFile = $this->config->paths->siteModules . "WireManga/Hooks/init.php";
-		if(!file_exists($initFile)) {
-			copy($initFile, $this->config->paths->site);
-		}
 
 		// Change title field in the repeater_wm_menu template context
 		$t = $this->wire("templates")->get("name=repeater_wm_menu");
@@ -32,6 +28,11 @@ class WireMangaThemeSetup extends Wire {
 		$f = $t->fieldgroup->getField('title', true);
 		$f->label = "Name";
 		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
+
+		$t = $this->wire("templates")->get("name=home");
+		$t->altFilename = "controller";
+		$t->save();
+		mkdir($config->paths->assets . "locks", 755);
 	}
 
 

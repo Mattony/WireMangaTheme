@@ -1,33 +1,7 @@
-<?php namespace ProcessWire;
-// redirect to login page if user is not logged in
-if(!$user->isLoggedin()) {
-	$session->redirect($config->urls->httpRoot . "user/login/");
-}
-$passRules = $fields->get("pass");
-$passLength = $passRules->minlength ? $passRules->minlength : 6;
-$passReq = str_replace("other", "special character", implode(", ", $passRules->requirements));
-$profileImage = $user->wm_profile_image->first() ? "<img src='{$user->wm_profile_image->first()->size(190, 190)->url}' id='current-profile-image'>" : "";
-?>
+<?php namespace ProcessWire; ?>
 
 <section id="page-<?= $page->id ?>" class="uk-width-large uk-margin-auto">
-	<?php
-	if($input->post->submit) {
-		$edit = $account->editProfile();
-		$session->redirect($page->url . "edit-profile");
-	}
-	if($session->get("edit_succes")) {
-		echo "<div class='message success'>{$session->get("edit_succes")}</div>";
-		$session->remove("edit_succes");
-	}
-	if($session->get("edit_error")) {
-		echo "<div class='message error'>{$session->get("edit_error")}</div>";
-		$session->remove("edit_error");
-	}
-	if($session->get("email_changed")) {
-		echo "<div class='message success'>{$session->get("email_changed")}</div>";
-		$session->remove("email_changed");
-	}
-	?>
+	<?= $session_message ?>
 	<h1><?= $user->name ?></h1>
 	<div class="edit-profile-main">
 

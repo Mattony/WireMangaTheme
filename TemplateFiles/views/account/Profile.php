@@ -1,13 +1,4 @@
-<?php namespace ProcessWire;
-	if(!$user->isLoggedin()) {
-		$session->redirect($config->urls->httpRoot . "user/login/");
-	}
-	if($user->wm_activation_code && !$user->isSuperuser()) {
-		$session->redirect($config->urls->httpRoot . "user/activate/");
-	}
-	// enable output formatting (needed to format date and other fields related to $user)
-	$user->of(true);
-?>
+<?php namespace ProcessWire; ?>
 
 <section class='profile uk-background-default uk-padding'>
 	<h1 class='profile-title'>
@@ -29,7 +20,7 @@
 			</div>
 			<div class='uk-flex'>
 				<div class='profile-info-left'><strong>Joined</strong></div>
-				<div class='profile-info-right'><?=  $user->wm_registration_date ?></div>
+				<div class='profile-info-right'><?=  $user->getFormatted("wm_registration_date") ?></div>
 			</div>
 		</div>
 	</div>
