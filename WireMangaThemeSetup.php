@@ -198,7 +198,7 @@ class WireMangaThemeSetup extends Wire {
 				if($field["name"] == "wm_description") {
 					$f->inputfieldClass = "InputfieldCKEditor";
 				}
-				if($field["name"] == "wm_views") {
+				if($field["name"] == "wm_views" || $field["name"] == "wm_manga_subs") {
 					$f->collapsed = 7;
 				}
 				if(isset($field["default"])) {

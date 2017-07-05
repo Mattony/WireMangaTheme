@@ -1,7 +1,7 @@
 <?php namespace ProcessWire;
 
 echo $pagination; ?>
-<h1><?= $page->parent->title ?>: <?= $page->title ?></h1>
+<h1><?= $taxonomyTitle ?>: <?= $page->title ?></h1>
 <div class="manga-latest uk-text-center">
 <?php
 $editLink = null;

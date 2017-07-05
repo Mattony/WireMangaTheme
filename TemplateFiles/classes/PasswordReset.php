@@ -7,11 +7,19 @@ class PasswordReset extends ProcessForgotPassword {
 	 *
 	 */
 	protected function step1_renderForm() {
-
 		$form = $this->modules->get("InputfieldForm"); 
 		$form->attr('action', './password-reset/?forgot=1'); 
 		$form->attr('method', 'post');
-	
+		
+		if($this->session->get("password_reset")) {
+			$message = $this->session->get("password_reset");
+			$this->session->remove("password_reset");
+			$field = $this->modules->get("InputfieldMarkup");
+			$field->attr('class', 'message success uk-text-center'); 
+			$field->markupText = $message;
+			$form->add($field);
+		}
+		
 		$field = $this->modules->get("InputfieldText");
 		$field->attr('id+name', 'username');
 		$field->attr('class', 'uk-input'); 
@@ -19,19 +27,10 @@ class PasswordReset extends ProcessForgotPassword {
 		$field->label = $this->_("Enter your user name");
 		$field->description = $this->_("If you have an account in our system with a valid email address on file, an email will be sent to you after you submit this form. That email will contain a link that you may click on to reset your password.");
 		$form->add($field);
-	
-		/*
-		$field = $this->modules->get("InputfieldEmail");
-		$field->attr('id+name', 'useremail');
-		$field->label = $this->_('Forgot your username?'); 
-		$field->collapsed = Inputfield::collapsedYes; 
-		$field->description = $this->_('Enter your email address and we will send you your account name.');
-		$form->add($field); 
-		*/
 
 		$submit = $this->modules->get("InputfieldSubmit"); 
 		$submit->attr('id+name', 'submit_forgot'); 
-		$field->attr('class', 'uk-button uk-margin-top'); 
+		$submit->attr('class', 'uk-button uk-margin-top'); 
 		$form->add($submit);
 
 		$this->session->userResetStep = 1; 
@@ -116,9 +115,44 @@ class PasswordReset extends ProcessForgotPassword {
 
 		$submit = $this->modules->get("InputfieldSubmit"); 
 		$submit->attr('id+name', 'submit_reset'); 
-		$field->attr('class', 'uk-button uk-margin-top');
+		$submit->attr('class', 'uk-button uk-margin-top');
 		$form->add($submit); 
 
 		return $form; 
+	}
+	
+	/**
+	 * Process the submitted password reset form and reset password
+	 *
+	 */
+	protected function step4_completeReset($id, $form) {
+
+		$form->processInput($this->input->post);
+		$user = $this->users->get((int) $id); 
+		$pass = $form->get('pass')->value; 
+
+		if(count($form->getErrors()) || !$user->id || !$pass) return $form->render();
+
+ 		$outputFormatting = $user->outputFormatting;
+		$user->setOutputFormatting(false);
+		$user->pass = $pass; 
+		$user->save();
+		$user->setOutputFormatting($outputFormatting);
+
+		$this->session->message($this->_("Your password has been successfully reset. You may now login.")); 
+
+		$this->session->remove('userResetStep'); 
+		$this->session->remove('userResetID'); 
+		$this->session->remove('userResetName'); 
+
+		$database = $this->wire('database');
+		$table = $database->escapeTable($this->table);
+		$query = $database->prepare("DELETE FROM `$table` WHERE id=:id"); 
+		$query->bindValue(":id", $user->id, \PDO::PARAM_INT); 
+		$query->execute();
+		
+		$this->session->set("password_reset", "Your password has been changed.");
+		$this->session->redirect("./"); 
+			
 	}
 }

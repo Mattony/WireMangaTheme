@@ -62,14 +62,14 @@ if($input->post->action === "showInfo") {
 	$desc   = substr(strip_tags($p->wm_description), 0, 500) . "...";
 
 	// Build html output
-	$out  = "<div class='directory-left uk-width-1-4@m uk-text-center'>";
-	$out .= "<a href='{$p->url}'><img src='{$p->wm_cover->first()->size(250,0)->url}'></a>";
+	$out  = "<div class='dir-left uk-width-1-4@m uk-text-center'>";
+	$out .= "<a href='{$p->url}'><img src='{$p->wm_cover->first()->size(250,250)->url}'></a>";
 	$out .= "</div>";
 
-	$out .= "<div class='directory-right uk-width-3-4@m'>";
-	$out .= "<h3 class='directory-manga-author'> by {$author}</h3>";
-	$out .= "<div class='directory-manga-description'>{$desc}</div>";
-	$out .= "<div class='directory-manga-genre'>{$genre}</div>";
+	$out .= "<div class='dir-right uk-width-3-4@m'>";
+	$out .= "<h3 class='dir-manga-author'> by {$author}</h3>";
+	$out .= "<div class='dir-manga-description'>{$desc}</div>";
+	$out .= "<div class='dir-manga-genre'>{$genre}</div>";
 	$out .= "</div>";
 	echo json_encode($out);
 }

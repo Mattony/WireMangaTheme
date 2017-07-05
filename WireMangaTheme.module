@@ -27,7 +27,9 @@ class WireMangaTheme extends Process {
 		$this->wire("wmt", $this);
 
 		$this->wire()->addHookAfter("Pages::saveReady", $this, "cacheChapters");
-		$this->wire()->addHookAfter("Pages::save", $this, "sendChapterSubscriptionEmail");
+		$this->wire()->addHookAfter("Pages::published", $this, "cacheChapters");
+		$this->wire()->addHookAfter("Pages::unpublished", $this, "cacheChapters");
+		$this->wire()->addHookAfter("Pages::published", $this, "sendChapterSubscriptionEmail");
 		$this->wire()->addHookAfter("ProcessPageEdit::execute", $this, "renameChildrenTab");
 		if($this->input->get->update === "WireMangaTheme") {
 			$this->wire()->addHookBefore("ProcessModule::execute", $this, "changeModuleService");
@@ -46,7 +48,7 @@ class WireMangaTheme extends Process {
 
 	public function upgrade($fromVersion, $toVersion) {
 		$this->message("Upgraded from {$fromVersion} to {$toVersion}");
-		if( $toVersion > "0.0.5" ) {}
+		//if( $toVersion > "0.0.5" ) {}
 	}
 
 	/**
@@ -86,7 +88,7 @@ class WireMangaTheme extends Process {
 		if($page->template->name === "wm_chapter") {
 			$subs = $page->parent->wm_manga_subs;
 			foreach($subs as $sub) {
-				$message  = "A new {$page->parent->title} chapter is available here ";
+				$message  = "A new {$page->parent->title} chapter is available ";
 				$message .= "<a href='{$page->httpUrl}'>{$page->parent->title} {$page->title} - {$this->wire("settings")->wm_site_name}</a>";
 				// send email
 				$mail = wireMail();
@@ -101,7 +103,6 @@ class WireMangaTheme extends Process {
 
 	/**
 	 * Chapters markup to cache
-  	 *
 	 * used to cache chapters to keep the output consistent
 	 *
 	 * @param Page $page The page containing the chapters to cache

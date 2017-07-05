@@ -295,13 +295,13 @@ body {
     align-items: center;
 }
 
-.directory-manga h2 {
+.dir-manga-title {
 	display: block;
 	font-size: 1.6rem;
 	width: calc(100% - 41px);
 }
 
-.directory-title a {
+.dir-manga-title a {
 	box-sizing: border-box;
 	display: block;
 	padding: 4px 0 4px 25px;
@@ -309,26 +309,31 @@ body {
 }
 
 
-.js-visible.directory-manga .fa,
-.js-visible .directory-title a {
+.directory-manga.js-visible .fa,
+.js-visible .dir-manga-title a {
 	background-color: #222;
 	color: #fff;
 }
 
 .directory-manga .fa:hover,
-.directory-title a:hover {
+.dir-manga-title a:hover {
 	background-color: #1e87f0;
 	color: #fff;
 	cursor: pointer;
 	text-decoration: none;
 }
 
-.js-visible .directory-content {
+.js-visible .dir-manga-content {
+	display: flex;
 	padding: 20px;
 	width: 100%;
 }
 
-.directory-manga-genre {
+.js-hidden .dir-manga-content {
+	display: none;
+}
+
+.dir-manga-genre {
 	margin-top: 20px;
 }
 
@@ -433,6 +438,10 @@ body {
 	min-height: 350px;
 	display: flex;
 	align-items: center;
+}
+
+.reader-image > img {
+	text-align: center;
 }
 
 .reader-nav-left {

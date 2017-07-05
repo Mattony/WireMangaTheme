@@ -25,14 +25,14 @@
 			<div class='form-group uk-margin-bottom'>
 				<label for='hide-adult' class='uk-form-label'>Hide Adult Manga</label> 
 				<input type='checkbox' name='wm_hide_adult' id='hide-adult' class='uk-checkbox' <?= $checked ?>>
-				<br><em>If checked the adult warning won't show anymore.</em>
+				<br><em>If checked manga marked as adult will be hidden.</em>
 			</div>
 
 			<?php $checked = $user->wm_adult_warning_off ? "checked='checked'" : ""; ?>
 			<div class='form-group uk-margin-bottom'>
 				<label for='adult-warning' class='uk-form-label'>Disable Adult Warning</label> 
 				<input type='checkbox' name='wm_adult_warning_off' id='adult-warning' class='uk-checkbox' <?= $checked ?>>
-				<br><em>If checked manga marked as adult will be hidden.</em>
+				<br><em>If checked the adult warning won't show anymore.</em>
 			</div>
 
 			<div class='form-group uk-margin-bottom'>

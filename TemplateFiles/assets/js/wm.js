@@ -154,33 +154,35 @@ $(".manga-get-comments").on("click", function(){
 	
 
 //Ajax for manga directory
-$(".directory-manga").on("click", ".js-manga-info.js-show", function(){
+var cache = {};
+$(document).on("click", ".js-hidden .js-toggle", function(){
 	var pageID = $(this).attr("data-id");
-	$("#"+pageID+" .js-manga-info.js-show").removeClass("js-show");
-	$.ajax({
-		url: config.ajaxUrl,
-		type: "POST",
-		dataType: "json",
-		data: {
-			"action": "showInfo",
-			"pageID": pageID
-		},
-	}).done(function(data){
-		$("#"+pageID+" .js-manga-info").addClass("js-hide");
-		$("#"+pageID+" .js-directory-ajax-content").html(data);
-		$("#"+pageID+" .js-manga-info.js-hide .fa").replaceWith("<i class='fa fa-times-circle' aria-hidden='true'></i>");
-		$("#"+pageID+".directory-manga").toggleClass("js-visible");
-	});
+	var selector = "#"+pageID;
+	if(!cache[pageID]) {
+		var ajax = $.ajax({
+			url: config.ajaxUrl,
+			type: "POST",
+			dataType: "json",
+			data: {
+				"action": "showInfo",
+				"pageID": pageID
+			},
+		}).done(function(data){
+			cache[pageID] = true;
+			$(selector).toggleClass("js-hidden js-visible");
+			$(selector + " .dir-manga-content").html(data);
+			$(selector + " .fa").toggleClass("fa-info-circle fa-times-circle");
+		});
+	} else {
+		$(selector).toggleClass("js-hidden js-visible");
+		$(selector + " .fa").toggleClass("fa-info-circle fa-times-circle");
+	}
 });
 
-$(".directory-manga").on("click", ".js-manga-info.js-hide", function(){
-	var pageID = $(this).attr("data-id");
-	$("#"+pageID+" .js-manga-info").addClass("js-show");
-	$("#"+pageID+" .js-manga-info.js-hide").removeClass("js-hide");
-	$("#"+pageID+" .js-directory-ajax-content").html("");
-	$("#"+pageID+" .js-manga-info.js-show .fa").replaceWith("<i class='fa fa-info-circle' aria-hidden='true'></i>");
-	$("#"+pageID+".directory-manga").toggleClass("js-visible");
+$(document).on("click", ".js-visible .js-toggle", function(){
+	var selector = "#" + $(this).attr("data-id");
+	$(selector).toggleClass("js-hidden js-visible");
+	$(selector + " .fa").toggleClass("fa-info-circle fa-times-circle");
 });
-
 
 });

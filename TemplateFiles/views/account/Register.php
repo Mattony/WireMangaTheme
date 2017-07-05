@@ -4,7 +4,8 @@ if($user->isLoggedin()) {
 }
 $passRules = $fields->get("pass");
 $passLength = $passRules->minlength ? $passRules->minlength : 6;
-$passReq = str_replace("other", "special character", implode(", ", $passRules->requirements));
+$requirements = $passRules->requirements ? $passRules->requirements : ["letter", "digit"];
+$passReq = str_replace("other", "special character", implode(", ", $requirements));
 ?>
 
 <section id="page-<?= $page->id ?>" class="uk-width-large uk-margin-auto">

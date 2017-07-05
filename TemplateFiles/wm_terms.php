@@ -2,7 +2,33 @@
 
 $bodyClass .= " manga-archive";
 
-$field = "wm_" . str_replace("-", "_", $page->parent->name);
+if($page->parent->name === "author") {
+	$field = "wm_author";
+	$taxonomyTitle = "Author";
+}
+elseif($page->parent->name === "artist") {
+	$field = "wm_artist";
+	$taxonomyTitle = "Artist";
+}
+elseif($page->parent->name === "genre") {
+	$field = "wm_genre";
+	$taxonomyTitle = "Genre";
+}
+elseif($page->parent->name === "type") {
+	$field = "wm_type";
+	$taxonomyTitle = "Type";
+}
+elseif($page->parent->name === "manga-status") {
+	$field = "wm_manga_status";
+	$taxonomyTitle = "Manga Status";
+}
+elseif($page->parent->name === "scan-status") {
+	$field = "wm_scan_status";
+	$taxonomyTitle = "Scanlation Status";
+}
+
+
+
 $results = $pages->find("template=wm_manga_single, limit=24, {$field}={$page->name}, sort=-published, sort=name");
 
 if($input->pageNum){
@@ -19,6 +45,7 @@ $vars = array(
 	"page" => $page,
 	"results" => $results,
 	"pagination" => $results->renderPager($paginationOptions),
+	"taxonomyTitle" =>$taxonomyTitle,
 );
 
 $content = $files->render(__DIR__ . "/views/Terms.php", $vars);
