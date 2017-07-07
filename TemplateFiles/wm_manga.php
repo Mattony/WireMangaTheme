@@ -15,7 +15,7 @@ $q = $sanitizer->selectorValue($q);
 if($q && array_search($q, $aToZ) !== false) {
 	$results = $pages->find("template=wm_manga_single, title^={$q}, sort=title, limit={$limit}, $hideAdultManga");
 	$noResults = ($results->count) ? "" : "<div class='directory--no-results'>No results!</div>";
-} else if($q && $q == "#") {
+} else if($q && $q == "number") {
 	$numbers = "0|1|2|3|4|5|6|7|8|9";
 	$results = $pages->find("template=wm_manga_single, name^={$numbers}, sort=title, limit={$limit}, $hideAdultManga");
 	$noResults = ($results->count) ? "" : "<div class='directory--no-results'>No results!</div>";

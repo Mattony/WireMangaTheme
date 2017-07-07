@@ -5,7 +5,13 @@
 		// and build the letter navigation
 		$letternav = null;
 		foreach($aToZ as $letter) {
-			$letternav .= "<a href='{$page->url}{$letter}' class='uk-label uk-margin-small-right'>{$letter}</a>";
+			if($letter === "#") {
+				$class = ($input->urlSegment1 === "number") ? " uk-background-secondary" : null;
+				$letternav .= "<a href='{$page->url}number/' class='uk-label uk-margin-small-right{$class}'>{$letter}</a>";
+				continue;
+			}
+			$class = ($input->urlSegment1 === $letter) ? " uk-background-secondary" : null;
+			$letternav .= "<a href='{$page->url}{$letter}/' class='uk-label uk-margin-small-right{$class}'>{$letter}</a>";
 		}
 	?>
 	<div class="directory-letters uk-margin-small-bottom"><?= $letternav ?></div>

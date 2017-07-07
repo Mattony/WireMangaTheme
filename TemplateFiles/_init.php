@@ -41,7 +41,7 @@ $headerAssets = "
 // assets added before the closing body tag
 $footerAssets = "
 <script src='{$config->urls->templates}assets/js/uikit.min.js'></script>
-<script src='{$config->urls->templates}assets/js/wm.js'></script>";
+<script src='{$config->urls->templates}assets/js/wm.js'></script>\n";
 
 /**
  * Body Classes

@@ -62,18 +62,18 @@ class WireMangaTheme extends Process {
 	public function cacheChapters(HookEvent $event) {
 		$page = $event->arguments[0];
 		$cache = $this->wire("cache");
-		if( $page->template->name == "wm_manga_single" && $this->wire("session")->get('dontRefreshCache:' . $page->id) != 1 ) :
+		if($page->template->name === "wm_manga_single") {
 			$cache->delete("chapters:" . $page->id);
 			$cache->get("chapters:" . $page->id, $cache::expireNever, function() use($page) {
 				return $this->chapterListMarkup($page);
 			});
-		elseif( $page->template->name == "wm_chapter" ) :
+		} elseif($page->template->name === "wm_chapter") {
 			$cache->delete("chapters:" . $page->parent->id);
 			$cache->get("chapters:" . $page->parent->id, $cache::expireNever, function() use($page) {
 				return $this->chapterListMarkup($page->parent);
 			});
 			$cache->delete("siblings:" . $page->parent->id);
-		endif;
+		};
 	}
 
 	/** 
@@ -111,7 +111,7 @@ class WireMangaTheme extends Process {
 	public function chapterListMarkup(Page $page) {
 		$chapters = $this->wire("settings")->wm_no_chapters;
 		if($page->children->count) {
-			$chapters = $this->wire("wm")->chaptersList($page);
+			$chapters = $this->chaptersList($page);
 		}
 		return $chapters;
 	}
@@ -130,5 +130,53 @@ class WireMangaTheme extends Process {
 			$this->wire("config")->moduleServiceURL = 'http://wiremanga.com/module/';
 			$this->wire("config")->moduleServiceKey = (__NAMESPACE__ ? 'pw300' : 'pw280');
 		}
+	}
+
+	/** 
+	 * Get chapters list
+	 *
+	 * @param Page $page Page (manga) to get chapters from
+	 *
+	 * @return string
+	 */
+	public function chaptersList(Page $page) {
+		$volOrder = "";
+		$chOrder  = "";
+		if($page->wm_sort_chapters == "2") {
+			$volOrder = "-";
+		}
+		if($page->wm_sort_chapters == "3") {
+			$volOrder = "-";
+			$chOrder  = "-";
+		}
+		$chapters = $page->children->sort("{$chOrder}name");
+		$prevChapter = "";
+		$out = "";
+		$x = 0;
+		foreach($chapters->sort("{$volOrder}wm_chapter_volume") as $c) {
+			if($c->wm_chapter_images->count === 0) {
+				continue;
+			}
+			$volumeNumber = $c->wm_chapter_volume ? $c->wm_chapter_volume : "?";
+			$currentChapter = $c->wm_chapter_volume;
+			$volContainer = "";
+			if($currentChapter != $prevChapter) {
+				$volContainerClose = ($x === 0) ? "" : "</div></div>";
+				$volContainer  = "{$volContainerClose}<div class='manga-volume'>";
+				$volContainer .= "<div class='volume-header'>Volume {$volumeNumber}</div>";
+				$volContainer .= "<div class='volume-chapters'>";
+			}
+			$chname = ($c->wm_chapter_name) ? " - {$c->wm_chapter_name}" : "";
+
+			$out .= $volContainer;
+			$out .= "<div class='chapter'><a href='{$c->url}' class='chapter-link'>Chapter {$c->title}{$chname}</a></div>";
+			$prevChapter = $currentChapter;
+			$x++;
+		}
+		if($volContainer){
+			$out .= "</div></div>";
+		}
+
+		return $out;
 	}
 }

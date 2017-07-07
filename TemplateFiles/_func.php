@@ -224,20 +224,15 @@ function viewCounter() {
 	$page    = wire("page");
 	$session = wire("session");
 	// increase views by one if it is a new session
-	if($session->get('viewed:'.$page->id) != 1) {
-		// prevent clearing of chapter list cache
-		// by setting a session variable
-		$session->set('dontRefreshCache:'.$page->id, 1);
+	if(!$session->get('viewed:'.$page->id)) {
 
 		// increment views and save page
 		$page->of(false);
 		$page->wm_views = $page->wm_views ? $page->wm_views + 1 : 1;
 		$page->save("wm_views");
 
-		// clear session variable so cache can be cleared
-		$session->set('dontRefreshCache:'.$page->id, 0);
 		// set page as viewed so it doesn't increment again this session
-		$session->set('viewed:'.$page->id, 1);
+		$session->set('viewed:'.$page->id, true);
 	}
 }
 

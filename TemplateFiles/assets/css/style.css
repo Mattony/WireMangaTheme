@@ -75,6 +75,11 @@
 	color: #498fb9;
 }
 
+.menu li:hover > a:not(.submenu-link),
+.menu li:hover > .submenu-toggle {
+    background: #e6e6e6;
+}
+
 .submenu-wrap {
 	background: #dcdcdc;
 	flex: 1 1 100%;
@@ -90,7 +95,11 @@
 .menu-link {
 	display: block;
 	flex: 0 0 calc(100% - 44px);
-	padding: 10px 3px 10px 15px;
+	padding: 10px 15px;
+}
+
+.has-child .menu-link {
+	padding-right: 3px;
 }
 
 .submenu .menu-link {

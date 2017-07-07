@@ -16,6 +16,17 @@ $options = ["One image per page", "All chapter images on one page"];
 $footerAssets .= "<script src='{$config->urls->templates}assets/js/manga-reader.js'></script>\n";
 if($readerSettings["show_all_ch_images"]) {
 	$footerAssets .= "<script src='{$config->urls->templates}assets/js/lazysizes.min.js' async=''></script>\n";
+} else {
+	$footerAssets .= "<script src='{$config->urls->templates}assets/js/jquery.preload.min.js' async=''></script>\n";
+	$footerAssets .= "<script>
+				var images = [
+					'{$page->wm_chapter_images->sort("name")->eq($input->urlSegment1)->httpUrl}',
+					'{$page->wm_chapter_images->sort("name")->eq($input->urlSegment1 + 1)->httpUrl}',
+					'{$page->wm_chapter_images->sort("name")->eq($input->urlSegment1 + 2)->httpUrl}',
+				];
+				var queue = new createjs.LoadQueue(true);
+				queue.loadManifest(images);
+			</script>";
 }
 $bodyClass .= " manga-reader";
 
