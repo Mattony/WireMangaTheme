@@ -136,7 +136,6 @@ function menuBuilder() {
 	if(!wire("settings")->wm_menu->count) {
 		return;
 	}
-	$rootUrl = wire("config")->urls->root;
 	$menu = "";
 	$closeLast = null;
 	$selector  = (wire("user")->isLoggedin()) ? "wm_menu_show_to=1|2" : "wm_menu_show_to=1|3";
@@ -152,17 +151,17 @@ function menuBuilder() {
 		$hasChildIcon = null;
 		if($items->eq($k+1) && $items->eq($k+1)->depth > $item->depth) {
 			$hasChild = "has-child";
-			$hasChildIcon = "<div class='submenu-toggle'><i class='fa fa-chevron-down' aria-hidden='true'></i></div>";
+			$hasChildIcon = "<div class='submenu-toggle'><i class='fa fa-plus' aria-hidden='true'></i></div>";
 		}
 		if($item->depth > $depth) {
 			if($depth == -1) {
-				$menuWrapperOpen = "<ul class='menu hidden'>";
+				$menuWrapperOpen = "<ul class='menu'>";
 			} else {
-				$menuWrapperOpen = "<div class='submenu-wrap'><ul class='submenu'>";
+				$menuWrapperOpen = "<ul class='submenu'>";
 			}
 			$menu .= $menuWrapperOpen;
 		} else if($item->depth < $depth) {
-			$menuWrapperClose =  ($depth == -1) ? "</ul>" : "</ul></div>";
+			$menuWrapperClose =  ($depth == -1) ? "</ul>" : "</ul>";
 			$menu .= str_repeat($menuWrapperClose, $depth - $item->depth);
 		}
 		$href = ($item->wm_menu_URL != "-") ? " href='{$item->wm_menu_URL}'" : "";

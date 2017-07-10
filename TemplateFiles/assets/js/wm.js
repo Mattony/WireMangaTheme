@@ -1,24 +1,27 @@
-$(document).ready(function(){
+$(document).ready(function() {
 
 // Menu toggles
-$(document).on("click", ".menu-toggle", function(){
-	$(".menu").toggle(300);
+$(document).on("click", ".menu-toggle", function() {
+	$(".menu").toggle(200);
 });
-$(document).on("click", ".submenu-toggle", function(e){
+$(document).on("click", ".submenu-toggle", function(e) {
 	e.stopPropagation();
+	$(this).toggleClass("active");
 	var thisIcon = $(this).children(".fa");
-	var thisSubWrap = $(this).siblings(".submenu-wrap");
+	var thisSubWrap = $(this).siblings(".submenu");
+	$(thisSubWrap).toggleClass("active");
 
-	$(".submenu-wrap").not(thisSubWrap).hide();
-	$(".fa-chevron-up").not(thisIcon).addClass("fa-chevron-down").removeClass("fa-chevron-up");
+	//$(".submenu").not(thisSubWrap).hide();
+	$(".fa-minus").not(thisIcon).addClass("fa-plus").removeClass("fa-minus");
 
-	thisIcon.toggleClass("fa-chevron-down fa-chevron-up");
-	thisSubWrap.toggle(200);
+	thisIcon.toggleClass("fa-plus fa-minus");
+	//thisSubWrap.toggle();
+	console.log(thisSubWrap);
 });
 
 $(document).on("click", function () {
-	$(".submenu-wrap").hide();
-	$(".fa-chevron-up").addClass("fa-chevron-down").removeClass("fa-chevron-up");
+	//$(".submenu").hide();
+	$(".fa-minus").addClass("fa-plus").removeClass("fa-minus");
 });
 
 
