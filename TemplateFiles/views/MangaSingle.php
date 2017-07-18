@@ -1,9 +1,16 @@
 <?php namespace ProcessWire; ?>
-
+<?php
+$editLink = null;
+if($user->isSuperUser()) {
+	$editLink  = "<a href='{$config->urls->admin}page/edit/?id={$page->id}' class='edit-link' title='Edit {$page->title}'>";
+	$editLink .= "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>";
+	$editLink .= "</a>";
+}
+?>
 <article class="manga uk-article">
 
     <div class="manga-header uk-text-center">
-		<h1 class="manga-title"><?= $page->title ?></h1>
+		<h1 class="manga-title"><?= $editLink ?> <?= $page->title ?></h1>
 		<?php if($alt_titles): ?>Alternative Titles: <?= $alt_titles ?><?php endif ?>
 	</div>
 	<hr class="uk-divider-icon">
@@ -81,12 +88,12 @@
 </article>
 
 <div class="manga-toggles">
-	<div class="manga-get-chapters <?= $chaptersTabClass ?>">Chapters</div>
-	<div class="manga-get-comments <?= $commentsTabClass ?>">Comments</div>
+	<div class="manga-get-chapters <?= $chaptersIsActive ?>">Chapters</div>
+	<div class="manga-get-comments <?= $commentsIsActive ?>">Comments</div>
 </div>
 
 <section class="uk-section-small uk-section-muted">
-	<div class='manga-chapters'>
+	<div class='manga-chapters <?= $chaptersIsActive ?>'>
 		<?php if($user->isLoggedin()): ?>
 			<?php if(!$page->wm_manga_subs->get($user)): ?>
 				<div class="subscription uk-margin-bottom">
@@ -104,7 +111,7 @@
 		<?php endif; ?>
 		<?= $chapters ?>
 	</div>
-	<div class='manga-comments'><?= $comments ?></div>
+	<div class='manga-comments <?= $commentsIsActive ?>'><?= $comments ?></div>
 	<?php
 
 	?>

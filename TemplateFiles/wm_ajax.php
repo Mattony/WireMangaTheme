@@ -9,7 +9,7 @@ if(!$config->ajax) {
  */
 if($input->post->action === 'ajaxSearch') {
 	$keywords = $sanitizer->selectorValue($input->post->keywords);
-	$results = $pages->find("template=wm_manga_single, name%={$keywords}, $hideAdultManga");
+	$results = $pages->find("template=wm_manga_single, title%={$keywords}, $hideAdultManga");
 	$out = "";
 	$out .= "<li class='header-search-item header-search-close'><a href='' ><i class='fa fa-times' aria-hidden='true'></i> Close</a></li>";
 	foreach($results as $r) {

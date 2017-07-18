@@ -98,9 +98,10 @@ elseif($input->urlSegment1 === "edit-profile") {
 	$footerAssets .= "<script src='{$config->urls->templates}assets/js/cropper.min.js'></script>";
 	$footerAssets .= "<script src='{$config->urls->templates}assets/js/cropper-setup.js'></script>";
 
-	$passRules = $fields->get("pass");
-	$passLength = $passRules->minlength ? $passRules->minlength : 6;
-	$passReq = str_replace("other", "special character", implode(", ", $passRules->requirements));
+	$passField  = $fields->get("pass");
+	$inputfield = $passField->getInputfield($page, $passField);
+	$passLength = $inputfield->get('minlength');
+	$passReq    = str_replace("other", "special character", implode(", ", $inputfield->get('requirements')));
 	$profileImage = $user->wm_profile_image->first() ? "<img src='{$user->wm_profile_image->first()->size(190, 190)->url}' id='current-profile-image'>" : "";
 	$vars = [
 		"account"      => $account,

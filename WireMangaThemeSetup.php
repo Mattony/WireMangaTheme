@@ -29,6 +29,21 @@ class WireMangaThemeSetup extends Wire {
 		$f->label = "Name";
 		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
 
+		// wm_settings template context
+		$t = $this->wire("templates")->get("name=wm_settings");
+		$f = $t->fieldgroup->getField('wm_chapters_limit', true);
+		$f->columnWidth = "33";
+		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
+
+		$f = $t->fieldgroup->getField('wm_lmanga_limit', true);
+		$f->columnWidth = "33";
+		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
+
+		$f = $t->fieldgroup->getField('wm_pmanga_limit', true);
+		$f->columnWidth = "33";
+		$this->wire("fields")->saveFieldgroupContext($f, $t->fieldgroup);
+		
+
 		$t = $this->wire("templates")->get("name=home");
 		$t->altFilename = "controller";
 		$t->save();
@@ -53,10 +68,11 @@ class WireMangaThemeSetup extends Wire {
 	public function setArrays() {
 
 		$this->pages_ = [
-			["title" => "Manga Directory","name" => "manga-directory", "template" => "wm_manga", "path" => "/"],
-			["title" => "User"          , "name" => "user"    , "template" => "wm_account" , "path" => "/"],
-			["title" => "Theme Settings", "name" => "settings", "template" => "wm_settings", "path" => "/"],
-			["title" => "Ajax"          , "name" => "ajax"    , "template" => "wm_ajax"    , "path" => "/"],
+			["title" => "Manga Directory", "name" => "manga-directory", "template" => "wm_manga"   , "path" => "/"],
+			["title" => "User"           , "name" => "user"           , "template" => "wm_account" , "path" => "/"],
+			["title" => "Theme Settings" , "name" => "settings"       , "template" => "wm_settings", "path" => "/"],
+			["title" => "Search"         , "name" => "search"         , "template" => "wm_search"  , "path" => "/"],
+			["title" => "Ajax"           , "name" => "ajax"           , "template" => "wm_ajax"    , "path" => "/"],
 		];
 		
 		$this->fields_ = [
@@ -75,8 +91,11 @@ class WireMangaThemeSetup extends Wire {
 		["name" => "wm_logo"             , "type" => "Image"   , "add_to" => "wm_settings", "label" => "Site Logo", "defaultValuePage" => true, "ext" => "gif jpg jpeg png", "maxFiles" => 1, "descRows" => 0],
 		["name" => "wm_site_name"        , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Site Name", "notes" => "Used in the title tag and emails."],
 		["name" => "wm_site_title_sep"   , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Site Title Separator", "notes" => "Used in the title tag."],
-		["name" => "wm_adult_warn_mess"  , "type" => "Text"    , "add_to" => "wm_settings", "label" => "Adult Warning Text", "notes" => "Displayed before accessing a manga marked as adult."],
+		["name" => "wm_chapters_limit"   , "type" => "Integer" , "add_to" => "wm_settings", "label" => "Home Chapters Number", "notes" => "Number of chapters to show on home page."],
+		["name" => "wm_lmanga_limit"     , "type" => "Integer" , "add_to" => "wm_settings", "label" => "Home Latest Manga Number", "notes" => "Number of latest manga to show on home page."],
+		["name" => "wm_pmanga_limit"     , "type" => "Integer" , "add_to" => "wm_settings", "label" => "Home Popular Manga Number", "notes" => "Number of popular manga to show on home page."],
 		["name" => "wm_site_email"       , "type" => "Email"   , "add_to" => "wm_settings", "label" => "Site Email", "notes" => "Emails will be sent from this address."],
+		["name" => "wm_adult_warn_mess"  , "type" => "Textarea", "add_to" => "wm_settings", "label" => "Adult Warning Text", "notes" => "Displayed before accessing a manga marked as adult."],
 		["name" => "wm_no_chapters"      , "type" => "Text"    , "add_to" => "wm_settings", "label" => "No Chapters Available Text", "notes" => "Text displayed when the manga has no chapters."],
 		["name" => "wm_limit_width"      , "type" => "Checkbox", "add_to" => "wm_settings", "label" => "Limit Page Width", "notes" => "When checked the page will have a max width of 1200px."],
 		["name" => "wm_menu"             , "type" => "Repeater", "add_to" => "wm_settings", "label" => "Menu", "fields" => "title wm_menu_URL wm_menu_class wm_menu_show_to wm_menu_admin"],
@@ -95,6 +114,7 @@ class WireMangaThemeSetup extends Wire {
 			["name" => "wm_account", "urlSegments" => 1],
 			["name" => "wm_settings"],
 			["name" => "wm_ajax"],
+			["name" => "wm_search"],
 		];
 	}
 

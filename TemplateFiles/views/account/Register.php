@@ -2,9 +2,10 @@
 if($user->isLoggedin()) {
 	$session->redirect($config->urls->httpRoot . "user/profile/");
 }
-$passRules = $fields->get("pass");
-$passLength = $passRules->minlength ? $passRules->minlength : 6;
-$requirements = $passRules->requirements ? $passRules->requirements : ["letter", "digit"];
+$passField  = $fields->get("pass");
+$inputfield = $passField->getInputfield($page, $passField);
+$passLength = $inputfield->minlength;
+$requirements = $inputfield->requirements;
 $passReq = str_replace("other", "special character", implode(", ", $requirements));
 ?>
 

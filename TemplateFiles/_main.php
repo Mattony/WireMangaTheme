@@ -28,12 +28,12 @@ $pageWidth = $settings->wm_limit_width ? "" : "uk-container-expand";
 				</nav>
 
 				<div class="header-search uk-navbar-item uk-navbar-right">
-					<i class="fa fa-search header-search-toggle js-search-toggle" aria-hidden="true"></i>
 					<form action="<?= $config->urls->httpRoot ?>search/" method="get" class="header-search-form uk-width-1 uk-flex">
-						<input type="text" name="s" class="header-search-input js-search-input uk-input" placeholder="Search ...">
+						<input type="text" name="s" class="header-search-input uk-input" placeholder="Search ...">
 					</form>
+					<i class="fa fa-search header-search-toggle" aria-hidden="true"></i>
 				</div>
-				<ul class="header-search-results js-search-results"></ul>
+				<ul class="header-search-results"></ul>
 			</div>
 		</header>
 

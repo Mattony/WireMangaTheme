@@ -127,8 +127,8 @@ class WireMangaTheme extends Process {
 
 	public function changeModuleService(HookEvent $event) {
 		if($this->input->get->update === "WireMangaTheme") {
-			$this->wire("config")->moduleServiceURL = 'http://wiremanga.com/module/';
-			$this->wire("config")->moduleServiceKey = (__NAMESPACE__ ? 'pw300' : 'pw280');
+			$this->wire("config")->moduleServiceURL = "//wiremanga.com/module/";
+			$this->wire("config")->moduleServiceKey = (__NAMESPACE__ ? "pw300" : "pw280");
 		}
 	}
 

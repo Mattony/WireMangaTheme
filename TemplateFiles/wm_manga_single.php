@@ -28,34 +28,34 @@ $comments = $commentForm . getComments($page);
 
 // variables sent to the view file
 $vars = array(
-    "chapters"    => $chapters,
-    "authors"     => getTerms($page->wm_author, ",", ""),
-    "artists"     => getTerms($page->wm_artist, ",", ""),
-    "genres"      => getTerms($page->wm_genre, ",", ""),
-    "type"        => getTerms($page->wm_type, ",", ""),
-    "mangaStatus" => getTerms($page->wm_manga_status, ",", ""),
-    "scanlation"  => getTerms($page->wm_scan_status , ",", ""),
-    "alt_titles"  => $page->wm_alt_titles,
-    "description" => $page->wm_description,
-    "fredi"       => $fredi,
-    "chaptersTabClass" => "tab-active",
-	"commentsTabClass" => "",
+	"chapters"    => $chapters,
+	"authors"     => getTerms($page->wm_author, ",", ""),
+	"artists"     => getTerms($page->wm_artist, ",", ""),
+	"genres"      => getTerms($page->wm_genre, ",", ""),
+	"type"        => getTerms($page->wm_type, ",", ""),
+	"mangaStatus" => getTerms($page->wm_manga_status, ",", ""),
+	"scanlation"  => getTerms($page->wm_scan_status , ",", ""),
+	"alt_titles"  => $page->wm_alt_titles,
+	"description" => $page->wm_description,
+	"fredi"       => $fredi,
+	"chaptersIsActive" => "loaded active",
+	"commentsIsActive" => "",
 	"comments" => ""
 	
 );
 
 if($input->get->show === "comments") {
-    $vars["comments"] = $comments;
-    $vars["chapters"] = "";
-	$vars["chaptersTabClass"] = "";
-	$vars["commentsTabClass"] = "tab-active";
+	$vars["comments"] = $comments;
+	$vars["chapters"] = "";
+	$vars["chaptersIsActive"] = "";
+	$vars["commentsIsActive"] = "loaded active";
 }
 
 if($input->post->manga_subscribe && $user->isLoggedin()) {
-    subscribeUserToManga($page, $user);
+	subscribeUserToManga($page, $user);
 }
 if($input->post->manga_unsubscribe && $user->isLoggedin()) {
-    unsubscribeUserFromManga($page, $user);
+	unsubscribeUserFromManga($page, $user);
 }
 // if manga is marked as adult
 // and user didn't enable the display of adult content
@@ -63,7 +63,7 @@ if($input->post->manga_unsubscribe && $user->isLoggedin()) {
 $content = adultNotice($page, $page);
 if(!$content) {
 	$content = $files->render(__DIR__ . "/views/MangaSingle.php", $vars);
-    viewCounter();
+	viewCounter();
 }
 
 include("_main.php");

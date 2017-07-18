@@ -1,11 +1,15 @@
 <?php namespace ProcessWire;
 
-
 $bodyClass .= " manga-home";
+$ch_limit = $settings->wm_chapters_limit ? $settings->wm_chapters_limit : 12;
+$lm_limit = $settings->wm_lmanga_limit   ? $settings->wm_lmanga_limit   :  5;
+$pm_limit = $settings->wm_pmanga_limit   ? $settings->wm_pmanga_limit   :  5;
 
 $vars = array(
-    "chapters" => $pages->find("template=wm_chapter, sort=-created, limit=12 {$hideAdultChapters}"),
-    "hideAdultManga" => $hideAdultManga
+    "hideAdultManga" => $hideAdultManga,
+	"ch_limit" => $ch_limit,
+	"lm_limit" => $lm_limit,
+	"pm_limit" => $pm_limit,
 );
 
 /*------------------------------------------------------------------------------

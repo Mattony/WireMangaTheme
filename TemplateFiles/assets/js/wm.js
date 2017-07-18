@@ -78,11 +78,9 @@ $(document).on("click", ".manga-unsubscribe", function(){
 
 // Ajax Search in the header
 function ajaxSearch() {
-	var keywords = $(".js-search-input").val();
-	$(".js-search-submit").addClass("js-searching");
-	$(".js-search-submit").removeClass("js-search-submit");
-	$(".js-search-results").addClass("js-show");
-	$(".js-search-results").html("<div class='uk-text-center'><div uk-spinner></div></div>");
+	var keywords = $(".header-search-input").val();
+	$(".header-search-results").addClass("active");
+	$(".header-search-results").html("<div class='uk-text-center'><div uk-spinner></div></div>");
 
 	$.ajax({
 		url: config.ajaxUrl,
@@ -93,33 +91,37 @@ function ajaxSearch() {
 			"keywords": keywords
 		},
 	}).done(function(data){
-		$(".js-searching").addClass("js-search-submit");
-		$(".js-searching").removeClass("js-searching");
-		$(".js-search-results").html(data.html);
+		$(".header-search-results").html(data.html);
 	});
 }
+$(document).on("click", ".header-search-toggle", function() {
+	$(".header-search").toggleClass("active");
+	$(".header-search .fa").toggleClass("fa-search fa-close");
+	$(".header-search-input").focus();
+})
 
 var timeoutID = null;
-$(".header").on("keyup input", ".js-search-input", function(e){
+$(".header").on("keyup input", ".header-search-input", function(e){
 	if (this.value.length > 3) {
 		timeoutID = setTimeout(ajaxSearch.bind(undefined, e.target.value), 500);
 	} else {
 		clearTimeout(timeoutID);
-		$(".js-search-results").html("");
+		$(".header-search-results").html("");
 	}
 });
 
-$(".header").on("click", ".header-search-close", function(e){
+$(".header").on("click", ".header-search-close, .fa-close", function(e){
 	e.preventDefault();
-	$(".js-search-input").val("");
-	$(".js-search-results").html("");
+	$(".header-search-input").val("");
+	$(".header-search-results").html("");
+	$(".header-search-results").removeClass("active");
 });
 
 
 //Switch between chapters and comments
 function mangaToggler(action, putResultHere, hideThis) {
-	if($(putResultHere).is(":empty")) {
-		$(hideThis).css("display", "none");
+	if(!$(putResultHere).hasClass("loaded")) {
+		var content = $(putResultHere).html();
 		$(putResultHere).html("<div class=''><div uk-spinner></div></div>");
 		$.ajax({
 			url: config.ajaxUrl,
@@ -131,28 +133,30 @@ function mangaToggler(action, putResultHere, hideThis) {
 			},
 		}).done(function(data){
 			if(data.success == true) {
-				$(putResultHere).html(data.html);
+				$(hideThis).removeClass("active");
+				$(putResultHere).addClass("loaded active");
+				$(putResultHere).html(content+data.html);
 			} else {
 				$(".wm-message").addClass("error");
 				$(".wm-message").html(data.message);
 			}
 		});
 	} else {
-		$(putResultHere).css("display", "block");
-		$(hideThis).css("display", "none");
+		$(putResultHere).addClass("active");
+		$(hideThis).removeClass("active");
 	}
 
 }
 
 $(".manga-get-chapters").on("click", function(){
 	mangaToggler("showChapters", ".manga-chapters", ".manga-comments");
-	$(".manga-get-comments").removeClass("tab-active");
-	$(".manga-get-chapters").addClass("tab-active");
+	$(".manga-get-comments").removeClass("active");
+	$(".manga-get-chapters").addClass("active");
 });
 $(".manga-get-comments").on("click", function(){
 	mangaToggler("showComments", ".manga-comments", ".manga-chapters");
-	$(".manga-get-chapters").removeClass("tab-active");
-	$(".manga-get-comments").addClass("tab-active");
+	$(".manga-get-chapters").removeClass("active");
+	$(".manga-get-comments").addClass("active");
 });
 	
 

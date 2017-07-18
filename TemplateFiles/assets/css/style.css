@@ -1,7 +1,17 @@
+/* Base Elements */
+* {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: #f1f1f1;
+}
+
+
 /* Header */
 .header {
 	background-color: #f1f1f1;
-	box-shadow: 0 0 6px 0px #808080;
+	box-shadow: 0 0 10px 0px #9e9e9e;
 	left: 0;
 	margin: 0;
 	padding: 0;
@@ -30,13 +40,18 @@
 }
 
 /* Menu */
-.menu-toggle {
+
+.menu-toggle .fa,
+.header-search .fa {
 	cursor: pointer;
-    padding: 5px;
+	font-size: 20px;
+	padding: 15px;
 }
 
-.menu-toggle .fa:before {
-    font-size: 40px;
+.menu-toggle .fa:hover,
+.header-search .fa:hover {
+	background-color: #0f6ecd;
+    color: #fff;
 }
 
 .menu,
@@ -114,18 +129,36 @@
 
 /* Ajax Search */
 .header-search {
-	order: 3;
+	display: flex;
 	height: 50px;
+    left: 0;
 	margin-left: 0;
+	order: 3;
+    right: 0;
 }
 
-.header-search-results,
-.header-search-toggle {
+.header-search.active {
+    background-color: #f8f8f8;
+    position: absolute;
+}
+
+.header-search-form {
+	display: none;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.header-search.active .header-search-form {
+	display: block;
+}
+
+.header-search-results {
 	display: none;
 }
 
-.header-search-results.js-show {
+.header-search-results.active {
 	background: #f3f3f3;
+	border-top: 5px solid #ccc;
 	box-shadow: 0px 5px 12px -1px #7b7b7b;
 	display: block;
 	list-style: none;
@@ -161,16 +194,6 @@
 	background-color: #f04f4f;
 }
 
-/* Base Elements */
-* {
-	box-sizing: border-box;
-}
-
-body {
-	background-color: #f1f1f1;
-}
-
-
 /* Layout */
 .page {
     display: flex;
@@ -181,7 +204,7 @@ body {
 .content {
     box-sizing: border-box;
 	flex: 1;
-	margin: 60px auto;
+	margin: 75px auto;
 	width: 100%;
 }
 
@@ -212,9 +235,18 @@ body {
 	text-align: center;
 }
 
+.chapters-latest .chapter {
+	align-items: center;
+	flex-direction: row;
+	flex-basis: 100%;
+}
 /* Manga */
 .manga {
 	background-color: #fff;
+}
+
+.manga-title {
+    margin-top: 20px;
 }
 
 .manga-single .data-block {
@@ -255,31 +287,37 @@ body {
 	border-bottom: 1px solid #ccc;
 	color: #555;
 	display: flex;
-	padding: 50px 50px 0 50px;
+	padding: 25px 25px 0 25px;
 }
 
 .manga-toggles div {
 	cursor: pointer;
-	padding: 30px;
+	padding: 15px;
 	margin: 0 0 -1px 0px;
 	text-align: center;
-	width: 200px;
+	width: 150px;
 }
 
-.manga-toggles .tab-active {
+.manga-toggles .active {
 	background-color: #f8f8f8;
 	border-left: 1px solid #ccc;
 	border-right: 1px solid #ccc;
 	border-top: 5px solid #1e87f0;
 }
 
-.manga-toggles div:not(.tab-active) {
+.manga-toggles div:not(.active) {
 	color: #aaa;
 }
 
 .manga-chapters,
 .manga-comments {
+	display: none;
 	padding: 0 45px;
+}
+
+.manga-chapters.active,
+.manga-comments.active {
+	display: block;
 }
 
 /* Manga Directory */
@@ -551,78 +589,17 @@ body {
 /* Media Queries */
 /* bigger than 720px/45em */
 @media all and (min-width: 45em) {
-
-	.content {
-		margin-top: 30px;
+	/* Manga single */
+	.manga-toggles {
+		padding: 50px 50px 0 50px;
 	}
 
-	.header {
-		position: relative;
-	}
-	
-	.header > .uk-navbar,
-	.header-search,
-	.header .logo img {
-		height: auto;
+	.manga-toggles div {
+		padding: 30px;
+		width: 200px;
 	}
 
-	.header .logo {
-		padding: 10px;
-	}
-
-	.header-search-results.js-show {
-		top: 75px;
-	}
-
-	/* Menu */
-	.menu-wrapper {
-		display: flex;
-		flex: auto;
-	}
-
-	.menu-toggle,
-	.submenu-toggle {
-		display: none !important;
-	}
-
-	.menu {
-		border: 0;
-		box-shadow: initial;
-		display: flex !important;
-		height: 100%;
-		left: initial;
-		position: relative;
-		right: initial;
-		top: initial;
-	}
-
-	.menu a {
-		align-items: center;
-		border: 0;
-		display: flex !important;
-		height: 100%;
-		padding: 20px;
-	}
-
-	.has-child a {
-		width: 100%;
-	}
-
-	.has-child:hover ul {
-		display: block !important;
-		position: absolute;
-	}
-
-	.has-child ul a {
-		background-color: #e8e8e8;
-		border-top: 1px solid #ccc;
-		padding: 10px;
-	}
-
-	.menu-wrapper .submenu.active {
-		display: none;
-	}
-
+	/* Subscription */
 	.manga-subscription {
 		flex-direction: row;
 	}
@@ -654,9 +631,92 @@ body {
 
 /* bigger than 960px/60em */
 @media all and (min-width: 60em) {
+
+	.content {
+		margin-top: 30px;
+	}
+
 	/* Menu */
 	.header {
 		position: relative;
+	}
+
+	.header > .uk-navbar,
+	.header-search,
+	.header .logo img {
+		height: auto;
+	}
+
+	.header .logo {
+		padding: 10px;
+	}
+
+	.header-search-results.js-show {
+		top: 75px;
+	}
+
+	.header-search.active {
+		height: 100px;
+	}
+
+	.header-search-results.active {
+		top: 100px;
+	}
+
+	/* Menu */
+	.menu-wrapper {
+		display: flex;
+		flex: auto;
+	}
+
+	.menu-toggle,
+	.submenu-toggle {
+		display: none !important;
+	}
+
+	.menu {
+		border: 0;
+		box-shadow: initial;
+		display: flex !important;
+		height: 100%;
+		left: initial;
+		position: relative;
+		right: initial;
+		top: initial;
+	}
+
+	.menu a {
+		align-items: center;
+		border: 0;
+		display: flex !important;
+		justify-content: center;
+		height: 100%;
+		padding: 20px;
+		min-width: 100px;
+	}
+
+	.has-child a {
+		width: 100%;
+	}
+
+	.has-child:hover ul {
+		box-shadow: 3px 3px 5px 1px #ccc;
+		display: block !important;
+		position: absolute;
+	}
+
+	.has-child ul a {
+		background-color: #e8e8e8;
+		border-top: 1px solid #ccc;
+		padding: 10px;
+	}
+
+	.menu-wrapper .submenu.active {
+		display: none;
+	}
+
+	.chapters-latest .chapter {
+		flex: 1 0 45%;
 	}
 
 	/* Comments */
@@ -668,4 +728,17 @@ body {
 		width: calc(100% - 201px);
 	}
 	/* Comments end */
+}
+
+
+/* bigger than 120/75em */
+@media all and (min-width: 75em) {
+
+	.header-search-toggle {display: none;}
+	.header-search-form {display: block;}
+	.header-search.active {
+		background-color: transparent;
+		position: relative;
+	}
+
 }
