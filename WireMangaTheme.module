@@ -153,6 +153,7 @@ class WireMangaTheme extends Process {
 		$prevChapter = "";
 		$out = "";
 		$x = 0;
+		$hasVolume = false;
 		foreach($chapters->sort("{$volOrder}wm_chapter_volume") as $c) {
 			if($c->wm_chapter_images->count === 0) {
 				continue;
@@ -161,6 +162,10 @@ class WireMangaTheme extends Process {
 			$currentChapter = $c->wm_chapter_volume;
 			$volContainer = "";
 			if($currentChapter != $prevChapter) {
+				if(!$hasVolume)
+				{
+					$hasVolume = $c->wm_chapter_volume ? true : false;
+				}
 				$volContainerClose = ($x === 0) ? "" : "</div></div>";
 				$volContainer  = "{$volContainerClose}<div class='manga-volume'>";
 				$volContainer .= "<div class='volume-header'>Volume {$volumeNumber}</div>";
@@ -173,7 +178,7 @@ class WireMangaTheme extends Process {
 			$prevChapter = $currentChapter;
 			$x++;
 		}
-		if($volContainer){
+		if($hasVolume){
 			$out .= "</div></div>";
 		}
 
