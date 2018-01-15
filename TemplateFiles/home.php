@@ -7,6 +7,7 @@ $pm_limit = $settings->wm_pmanga_limit   ? $settings->wm_pmanga_limit   :  5;
 
 $vars = array(
     "hideAdultManga" => $hideAdultManga,
+	"hideAdultChapters" => $hideAdultChapters,
 	"ch_limit" => $ch_limit,
 	"lm_limit" => $lm_limit,
 	"pm_limit" => $pm_limit,
