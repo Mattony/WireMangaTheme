@@ -1,6 +1,4 @@
-# ~~BETA~~
-
-Ready for use, please report any bugs you encounter.
+Please report any bugs you encounter.
 
 This is a [ProcessWire](https://processwire.com) module.
 [ProcessWire Installation](https://processwire.com/docs/tutorials/installation-moving-and-troubleshooting/page3)
